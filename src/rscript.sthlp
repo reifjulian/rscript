@@ -38,7 +38,7 @@
 
 {title:Notes}
 
-{p 4 8 2}{cmd:rscript} has been tested on Windows and on the Unix tcsh shell.
+{p 4 8 2}{cmd:rscript} has been tested on Windows, Mac OS X, and Unix (tcsh shell).
 
 
 {title:Examples}
