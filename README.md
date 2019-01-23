@@ -1,7 +1,7 @@
 # RSCRIPT: call an R script from Stata.
 
 - Current version: `1.0 22jan2019`
-- Jump to: [`updates`](#recent-updates) [`install`](#install) [`description`](#description) [`author`](#author)
+- Jump to: [`updates`](#recent-updates) [`install`](#install) [`description`](#description) [`authors`](#authors)
 
 -----------
 
@@ -24,7 +24,7 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 For more details, see the Stata help file included in this package.
 
-## Author:
+## Authors:
 
 [David Molitor](http://www.davidmolitor.com)
 <br>University of Illinois
