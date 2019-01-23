@@ -5,6 +5,8 @@
 
 program define rscript, nclass
 
+	version 13.0
+
 	tempfile shell out err
 	tempname shellfile errfile
 
