@@ -45,13 +45,7 @@
 
 {p 4 4 2}1.  Call an R script and pass it the name of an input file.
 
-{col 8}{cmd:. {stata tempfile t}}
-
-{col 8}{cmd:. {stata sysuse auto.dta, clear}}
-
-{col 8}{cmd:. {stata save "`t'", replace}}
-
-{col 8}{cmd:. {stata rscript using example.R, args("`t'")}}
+{col 8}{cmd:. {stata rscript using example_1.R, rpath("`rscript_exe'") args("arg1" "arg2")}}
 
 
 {title:Authors}
@@ -59,6 +53,7 @@
 {p 4 4 2}David Molitor, University of Illinois
 
 {p 4 4 2}dmolitor@illinois.edu
+
 
 {p 4 4 2}Julian Reif, University of Illinois
 
