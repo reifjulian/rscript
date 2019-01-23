@@ -8,7 +8,7 @@
 
 {title:Syntax}
 
-{p 8 14 2}{cmd:rscript} {cmd:using} {it:filename.R}, {cmd:rpath(}{it:pathname}{cmd:)} [{cmd:args(}{it:{it:filename}}{cmd:) {cmd:force}}
+{p 8 14 2}{cmd:rscript} {cmd:using} {it:filename.R}, {cmd:rpath(}{it:pathname}{cmd:)} [{cmd:args(}{it:{it:filename}}{cmd:) {cmd:force}}]
 
 {p 4 4 2}where
 
