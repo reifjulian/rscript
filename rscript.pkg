@@ -1,0 +1,7 @@
+v 3
+d rscript. Call an R script from Stata.
+d David Molitor and Julian Reif, University of Illinois
+d dmolitor@illinois.edu, jreif@illinois.edu
+
+f /src/rscript.ado
+f /src/rscript.sthlp

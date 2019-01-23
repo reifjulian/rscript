@@ -1,0 +1,4 @@
+v 3
+d David Molitor and Julian Reif, University of Illinois
+d dmolitor@illinois.edu, jreif@illinois.edu
+p rscript - Call an R script from Stata.
