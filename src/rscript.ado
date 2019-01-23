@@ -1,6 +1,5 @@
 *! rscript 1.0 22jan2019 by David Molitor and Julian Reif
 
-* TO DO: test on Stata for Mac
 * TO DO: establish default for rpath() option
 * TO DO: implement a better error-catching mechanism for the R output
 
