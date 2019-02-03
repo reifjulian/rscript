@@ -8,7 +8,7 @@
 
 {title:Syntax}
 
-{p 8 14 2}{cmd:rscript} {cmd:using} {it:filename.R}, {cmd:rpath(}{it:pathname}{cmd:)} [{cmd:args(}{it:{it:filename}}{cmd:) {cmd:force}}]
+{p 8 14 2}{cmd:rscript} {cmd:using} {it:filename.R}, [{cmd:rpath(}{it:pathname}{cmd:)} {cmd:args(}{it:{it:filename}}{cmd:) {cmd:force}}]
 
 {p 4 4 2}where
 
@@ -25,7 +25,7 @@
 {title:Options}
 
 {p 4 8 2}
-{cmd:rpath(}{it:pathname}{cmd:)} specifies the location of the R executable (e.g., Rscript.exe).
+{cmd:rpath(}{it:pathname}{cmd:)} specifies the location of the R executable. The default is "Rscript" (no path location specified), which will call R using your system's default path.
 
 
 {p 4 8 2}
@@ -45,7 +45,12 @@
 
 {p 4 4 2}1.  Call an R script and pass it the name of an input file.
 
-{col 8}{cmd:. {stata rscript using example_1.R, rpath("`rscript_exe'") args("arg1" "arg2")}}
+{col 8}{cmd:. rscript using my_script.R, args("input_file.txt")}
+
+
+{p 4 4 2}2.  Same as Example 1, but specify the location of your R executable.
+
+{col 8}{cmd:. rscript using my_script.R, rpath("/usr/local/bin/Rscript") args("input_file.txt")}
 
 
 {title:Authors}
@@ -61,6 +66,5 @@
 
 
 {title:Also see}
-
 {p 4 4 2}
 {help rsource:rsource} (if installed)
