@@ -1,4 +1,4 @@
-*! rscript 1.0 3feb2019 by David Molitor and Julian Reif
+*! rscript 1.0 23feb2019 by David Molitor and Julian Reif
 
 * TO DO: establish default for rpath() option
 * TO DO: implement a better error-catching mechanism for the R output
@@ -73,9 +73,13 @@ program define rscript, nclass
 	file read `errfile' errline
 	while r(eof)==0 {
 		cap assert strpos(lower(`"`errline'"'), "error")==0
-		if _rc {
+		if _rc==9 {
 			display as error "`using' ended with an error"
 			if "`force'"=="" error 1
+		}
+		else if _rc {
+			display as error "Encountered a problem while parsing the error output file"
+			display as error "Error code: " _rc
 		}
 		file read `errfile' errline
 	}
