@@ -11,13 +11,12 @@ program drop _all
 local rscript_exe "/usr/local/bin/Rscript"
 
 * Typical R location for Windows
-local rscript_exe "C:/Program Files/R/R-3.4.4/bin/x64/Rscript.exe"
+local rscript_exe "C:/Program Files/R/R-3.5.1/bin/x64/Rscript.exe"
 
 * Specify location of R and run example_1.R
-rscript using example_1.R, rpath("`rscript_exe'") args("arg1" "arg2")
-
+rscript using example_1.R, rpath("`rscript_exe'") args("arg1 with spaces" "arg2")
 
 * Use a default path and run eample_1.R (not working on OS X currently)
-rscript using example_1.R, args("arg1" "arg2")
+rscript using example_1.R, args("Hello World!" "Arg2")
 
 ** EOF

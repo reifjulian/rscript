@@ -10,7 +10,7 @@ program define rscript, nclass
 	tempfile shell out err
 	tempname shellfile errfile
 
-	syntax using/, [rpath(string) args(string) force]
+	syntax using/, [rpath(string) args(string asis) force]
 	
 	****************
 	* Error checking
