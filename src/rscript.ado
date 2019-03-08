@@ -1,8 +1,5 @@
 *! rscript 1.0 23feb2019 by David Molitor and Julian Reif
 
-* TO DO: establish default for rpath() option
-* TO DO: implement a better error-catching mechanism for the R output
-
 program define rscript, nclass
 
 	version 13.0
@@ -18,6 +15,7 @@ program define rscript, nclass
 	confirm file "`using'"
 	
 	* If user does not specify the R executable, set the default to "rscript.exe"
+	* Note: we currently do not error check that the default option works
 	if !mi("`rpath'") confirm file "`rpath'"
 	else {
 		local rpath "rscript"
@@ -68,7 +66,7 @@ program define rscript, nclass
 	****************
 	* If there was an error in the execution of the R script, generate an error in Stata
 	****************
-	* Note: both warnings and errors get sent to the err file, so exit if the word "error" is sent to stderr.
+	* Note: both warnings and errors get sent to the err file, so exit only if the word "error" is sent to stderr. (This could be made more specific.)
 	file open `errfile' using `"`err'"', read
 	file read `errfile' errline
 	while r(eof)==0 {

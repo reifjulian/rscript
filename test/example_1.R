@@ -12,5 +12,8 @@ if (length(args)) {
 arg1
 arg2
 
+x <- matrix(1:10, ncol = 5)
+write.csv(x, file=arg2)
+
 
 ## EOF
