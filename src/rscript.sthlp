@@ -17,6 +17,9 @@
 {p 8 14 2}{it: stringlist} is a list of quoted strings.
 
 
+{p 4 4 2}By default, {cmd:rscript} calls R executable specified by the global macro RSCRIPT_PATH.
+
+
 {title:Description}
 
 {p 4 4 2}{cmd:rscript} calls the R script {it:filename.R} from Stata. It displays the R output (and errors, if applicable) in the Stata console.
@@ -25,12 +28,10 @@
 {title:Options}
 
 {p 4 8 2}
-{cmd:rpath(}{it:pathname}{cmd:)} specifies the location of the R executable. The default is "Rscript" (no path location specified), which will call R using your system's default path.
-
+{cmd:rpath(}{it:pathname}{cmd:)} specifies the location of the R executable. The default is to call the executable specified by the global RSCRIPT_PATH.
 
 {p 4 8 2}
 {cmd:args(}{it:filename}{cmd:)} specifies optional arguments to be passed to R.
-
 
 {p 4 8 2}
 {cmd:force} instructs {cmd:rscript} to not break when {it:filename.R} generates an error during execution.
@@ -39,16 +40,18 @@
 {title:Notes}
 
 {p 4 8 2}{cmd:rscript} has been tested on Windows, Mac OS X, and Unix (tcsh shell).
+For ease of use, we recommend defining the global RSCRIPT_PATH in your Stata {help profile:profile}.
 
 
 {title:Examples}
 
-{p 4 4 2}1.  Call an R script and pass it the name of an input file.
+{p 4 4 2}1.  Call an R script using the default location specified in RSCRIPT_PATH and pass it the name of an input file.
 
+{col 8}{cmd:. global RSCRIPT_PATH "/usr/local/bin/Rscript"}
 {col 8}{cmd:. rscript using my_script.R, args("input_file.txt")}
 
 
-{p 4 4 2}2.  Same as Example 1, but specify the location of your R executable.
+{p 4 4 2}2.  Same as Example 1, but specify the location of your R executable using the {cmd:rpath()} option.
 
 {col 8}{cmd:. rscript using my_script.R, rpath("/usr/local/bin/Rscript") args("input_file.txt")}
 
@@ -66,5 +69,6 @@
 
 
 {title:Also see}
+
 {p 4 4 2}
 {help rsource:rsource} (if installed)

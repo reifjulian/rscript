@@ -1,4 +1,4 @@
-*! rscript 1.0 23feb2019 by David Molitor and Julian Reif
+*! rscript 1.0 29april2019 by David Molitor and Julian Reif
 
 program define rscript, nclass
 
@@ -14,12 +14,15 @@ program define rscript, nclass
 	****************	
 	confirm file "`using'"
 	
-	* If user does not specify the R executable, set the default to "rscript.exe"
-	* Note: we currently do not error check that the default option works
-	if !mi("`rpath'") confirm file "`rpath'"
-	else {
-		local rpath "rscript"
+	* If user does not specify the location of the R executable, set the default to what is stored in RSCRIPT_PATH
+	if mi(`"`rpath'"') local rpath "$RSCRIPT_PATH"
+	
+	if mi(`"`rpath'"') {
+		di as error "Location of R executable must be specified using option rpath() or using the global RSCRIPT_PATH"
+		exit 198
 	}
+	
+	confirm file "`rpath'"
 	
 	****************
 	* Run the script. Redirect stdout to `out' and stderr to `err'
@@ -64,7 +67,7 @@ program define rscript, nclass
 	type `"`err'"'
 	
 	****************
-	* If there was an error in the execution of the R script, generate an error in Stata
+	* If there was an error in the execution of the R script, notify the user (and break, unless -force- option is specified)
 	****************
 	* Note: both warnings and errors get sent to the err file, so exit only if the word "error" is sent to stderr. (This could be made more specific.)
 	file open `errfile' using `"`err'"', read

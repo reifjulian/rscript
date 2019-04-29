@@ -21,6 +21,7 @@ confirm file "`t1'"
 
 * Use a default path and run example_1.R (not working on OS X currently)
 tempfile t2
+global RSCRIPT_PATH "`rscript_exe'"
 rscript using example_1.R, args("Hello World!" "`t2'")
 confirm file "`t2'"
 
