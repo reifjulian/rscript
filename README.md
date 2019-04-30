@@ -1,11 +1,14 @@
 # RSCRIPT: call an R script from Stata.
 
-- Current version: `1.0 22jan2019`
+- Current version: `1.0 29apr2019`
 - Jump to: [`updates`](#recent-updates) [`install`](#install) [`description`](#description) [`authors`](#authors)
 
 -----------
 
 ## Updates:
+
+* **April 29, 2019**
+  - Default path is now set by the global macro RSCRIPT_PATH
 
 * **January 22, 2019**
   - Added ```force``` option
