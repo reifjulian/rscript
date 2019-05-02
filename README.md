@@ -7,7 +7,7 @@
 
 ## Updates:
 
-* **April 29, 2019**
+* **May 2, 2019**
   - Default path is now set by the global macro RSCRIPT_PATH
 
 * **January 22, 2019**
