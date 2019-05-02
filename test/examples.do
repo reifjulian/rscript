@@ -25,5 +25,12 @@ global RSCRIPT_PATH "`rscript_exe'"
 rscript using example_1.R, args("Hello World!" "`t2'")
 confirm file "`t2'"
 
+* Error is generated if the path is missing or wrong
+global RSCRIPT_PATH ""
+cap rscript using example_1.R, args("Hello World!" "`t2'")
+assert _rc==198
+
+cap rscript using example_1.R, args("Hello World!" "`t2'") rpath("xxx:/xxx")
+assert _rc==601
 
 ** EOF

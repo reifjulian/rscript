@@ -1,4 +1,4 @@
-*! rscript 1.0 29april2019 by David Molitor and Julian Reif
+*! rscript 1.0 2may2019 by David Molitor and Julian Reif
 
 program define rscript, nclass
 
