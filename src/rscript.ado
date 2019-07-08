@@ -1,4 +1,4 @@
-*! rscript 1.0 2may2019 by David Molitor and Julian Reif
+*! rscript 1.0 8jul2019 by David Molitor and Julian Reif
 
 program define rscript, nclass
 
@@ -76,7 +76,7 @@ program define rscript, nclass
 		cap assert strpos(lower(`"`errline'"'), "error")==0
 		if _rc==9 {
 			display as error "`using' ended with an error"
-			if "`force'"=="" error 1
+			if "`force'"=="" error 198
 		}
 		else if _rc {
 			display as error "Encountered a problem while parsing the error output file"
