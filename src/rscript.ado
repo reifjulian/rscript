@@ -1,4 +1,5 @@
-*! rscript 1.0 8jul2019 by David Molitor and Julian Reif
+*! rscript 1.0.1 9jul2019 by David Molitor and Julian Reif
+* 1.0.1: Updated error handling
 
 program define rscript, nclass
 
