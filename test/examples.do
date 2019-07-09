@@ -33,9 +33,15 @@ assert _rc==198
 cap rscript using example_1.R, args("Hello World!" "`t2'") rpath("xxx:/xxx")
 assert _rc==601
 
-
 * Run example_2.R, which intentionally contains an error
 cap rscript using example_2.R, rpath("`rscript_exe'") args("arg1 with spaces" "`t1'")
 assert _rc==198
+
+* Example 3: replicate OLS with robust standard errors
+sysuse auto, clear
+reg price mpg, robust
+save "`t1'", replace
+rscript using example_3.R, rpath("`rscript_exe'") args("`t1'" "`t2'")
+
 
 ** EOF

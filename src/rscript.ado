@@ -30,11 +30,8 @@ program define rscript, nclass
 
 	di as result `"Running R script: `using'"'
 	if !mi(`"`args'"') di as result `"Args: `args'"'	
-	
-	di ""
-	di as result "Begin R output:"
-	di as result "`="_"*80'"
-	
+	di as result _n
+		
 	* Syntax for the -shell- call depends on which version of the shell is running:
 	*	Unix csh:  /bin/csh
 	*	Unix tcsh: /usr/local/bin/tcsh (default on NBER server)
@@ -61,19 +58,28 @@ program define rscript, nclass
 	}
 
 	****************
-	* Display output and errors
+	* Display stdout and stderr output
 	****************
-	type `"`out'"'  
+	di as result "Begin R output:"
+	di as result "`="_"*80'"
+	
+	di as result "{ul:stdout}:"
+	type `"`out'"'
+	di as result _n
+	di as result "{ul:stderr}:"
 	type `"`err'"'
+	
+	di as result "`="_"*80'"
+	di as result "...end R output"
 	
 	****************
 	* If there was an error in the execution of the R script, notify the user (and break, unless -force- option is specified)
 	****************
-	* Note: both warnings and errors get sent to the err file, so exit only if the word "error" is sent to stderr. (This could be made more specific.)
+	* Note: both warnings and errors get sent to stderr, so exit only if the word "error" is sent to stderr. (This could be made more specific.)
 	file open `errfile' using `"`err'"', read
 	file read `errfile' errline
 	while r(eof)==0 {
-		cap assert strpos(lower(`"`errline'"'), "error")==0
+		cap assert strpos(lower(`"`macval(errline)'"'), "error")==0
 		if _rc==9 {
 			display as error "`using' ended with an error"
 			if "`force'"=="" error 198
@@ -86,8 +92,6 @@ program define rscript, nclass
 	}
 	file close `errfile'
 
-	di as result "`="_"*80'"
-	di as result "...end R output"	
 end
 
 ** EOF
