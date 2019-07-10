@@ -22,7 +22,7 @@
 
 {title:Description}
 
-{p 4 4 2}{cmd:rscript} calls the R script {it:filename.R} from Stata. It displays the R output (and errors, if applicable) in the Stata console.
+{p 4 4 2}{cmd:rscript} calls {it:filename.R} from Stata. It displays the R output (and errors, if applicable) in the Stata console.
 
 
 {title:Options}
@@ -70,5 +70,5 @@ For ease of use, we recommend defining the global RSCRIPT_PATH in your Stata {he
 
 {title:Also see}
 
-{p 4 4 2}
-{help rsource:rsource} (if installed)
+{p 4 4 2}{help rsource:rsource} (if installed)
+
