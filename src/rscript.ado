@@ -1,4 +1,5 @@
-*! rscript 1.0.1 9jul2019 by David Molitor and Julian Reif
+*! rscript 1.0.2 4sep2019 by David Molitor and Julian Reif
+* 1.0.2: stderr is now parsed by Mata instead of Stata
 * 1.0.1: Updated error handling
 
 program define rscript, nclass
@@ -6,7 +7,7 @@ program define rscript, nclass
 	version 13.0
 
 	tempfile shell out err
-	tempname shellfile errfile
+	tempname shellfile
 
 	syntax using/, [rpath(string) args(string asis) force]
 	
@@ -74,25 +75,33 @@ program define rscript, nclass
 	di as result "...end R output"
 	
 	****************
-	* If there was an error in the execution of the R script, notify the user (and break, unless -force- option is specified)
+	* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
 	****************
-	* Note: both warnings and errors get sent to stderr, so exit only if the word "error" is sent to stderr. (This could be made more specific.)
-	file open `errfile' using `"`err'"', read
-	file read `errfile' errline
-	while r(eof)==0 {
-		cap assert strpos(lower(`"`macval(errline)'"'), "error")==0
-		if _rc==9 {
-			display as error "`using' ended with an error"
-			if "`force'"=="" error 198
-		}
-		else if _rc {
-			display as error "Encountered a problem while parsing the error output file"
-			display as error "Error code: " _rc
-		}
-		file read `errfile' errline
+	cap mata: parse_stderr("`err'")
+	if _rc==198 {
+		display as error "`using' ended with an error"
+		if "`force'"=="" error 198
 	}
-	file close `errfile'
-
+	else if _rc {
+		display as error "Encountered a problem while parsing stderr"
+		display as error "Mata error code: " _rc
+	}
 end
 
+* Parse the stderr output file and check whether "error" was printed anywhere
+mata:
+void parse_stderr(string scalar filename)
+{
+	real scalar input_fh
+	string scalar line
+
+	input_fh = fopen(filename, "r")
+	
+	while ((line=fget(input_fh)) != J(0,0,"")) {
+		if (strpos(strlower(line), "error")!=0) exit(error(198))
+	}
+	
+	fclose(input_fh)
+}
+end
 ** EOF

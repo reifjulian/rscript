@@ -1,6 +1,5 @@
 * This script runs a series of tests on the -rscript- package
 * Authors: David Molitor and Julian Reif
-clear
 adopath ++ "../src"
 set more off
 tempfile t
@@ -27,22 +26,22 @@ confirm file "`t2'"
 
 * Error is generated if the path is missing or wrong
 global RSCRIPT_PATH ""
-cap rscript using example_1.R, args("Hello World!" "`t2'")
-assert _rc==198
+rcof noi rscript using example_1.R, args("Hello World!" "`t2'")==198
 global RSCRIPT_PATH "`rscript_exe'"
 
-cap rscript using example_1.R, args("Hello World!" "`t2'") rpath("xxx:/xxx")
+rcof noi rscript using example_1.R, args("Hello World!" "`t2'") rpath("xxx:/xxx")==601
 assert _rc==601
 
-* Run example_2.R, which intentionally contains an error
-cap rscript using example_2.R, args("arg1 with spaces" "`t1'")
-assert _rc==198
+* Run example_2.R, which intentionally contains an error (rc==198)
+rcof noi rscript using example_2.R, args("arg1 with spaces" "`t1'")==198
 
 * Example 3: replicate OLS with robust standard errors
 sysuse auto, clear
 reg price mpg, robust
 save "`t1'", replace
 rscript using example_3.R, args("`t1'" "`t2'")
+
+insheet using "`t2'", comma clear
 
 
 ** EOF
