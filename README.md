@@ -1,11 +1,14 @@
 # RSCRIPT: call an R script from Stata.
 
-- Current version: `1.0 2may2019`
+- Current version: `1.0.2 4sep2019`
 - Jump to: [`updates`](#recent-updates) [`install`](#install) [`description`](#description) [`authors`](#authors)
 
 -----------
 
 ## Updates:
+
+* **September 4, 2019**
+  - stderr is now parsed by Mata rather than Stata
 
 * **May 2, 2019**
   - Default path is now set by the global macro RSCRIPT_PATH
