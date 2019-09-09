@@ -1,4 +1,4 @@
-# RSCRIPT: call an R script from Stata.
+# RSCRIPT: call an *R* script from Stata.
 
 - Current version: `1.0.2 4sep2019`
 - Jump to: [`updates`](#recent-updates) [`install`](#install) [`description`](#description) [`authors`](#authors)
@@ -26,7 +26,7 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 ## Description: 
 
-`rscript` is a [Stata](http://www.stata.com) command that runs an R script and displays the output in the Stata console.
+`rscript` is a [Stata](http://www.stata.com) command that runs an *R* script and displays the output in the Stata console.
 
 For more details, see the Stata help file included in this package.
 
