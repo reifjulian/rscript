@@ -37,7 +37,7 @@ This tutorial assumes you have [installed](#install) the `rscript` Stata package
 ```
 install.packages('tidyverse', repos='http://cran.us.r-project.org')
 install.packages('haven', repos='http://cran.us.r-project.org')
-install.packages('(estimatr)', repos='http://cran.us.r-project.org')
+install.packages('estimatr', repos='http://cran.us.r-project.org')
 ```
 
 We will write a Stata script that calls an *R* script and feeds it an input filename and an output filename. The *R* script will read in the input file, estimate an OLS regression with robust standard errors, and write the results out to the output file. Here is the *R* script:
@@ -75,9 +75,6 @@ Here is the Stata script:
 * Stata: OLS with robust standard errors
 sysuse auto, clear
 reg price mpg, robust
-
-* View R script
-type ols_robust.R
 
 * R: OLS with robust standard errors
 tempfile auto output
