@@ -54,7 +54,6 @@ if (length(args)) {
   arg1 <- args[1]
   arg2 <- args[2]
 } else {
-  
   arg1 <- "C:/Program Files/Stata16/ado/base/a/auto.dta"
   arg2 <- "output.csv"
 }
