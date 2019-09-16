@@ -64,7 +64,7 @@ ols <- lm_robust(price ~ mpg, data = my_data, se_type = "HC1")
 ols
 
 # Outsheet OLS results
-write.csv(tidy(ols), file=arg2)
+write_csv(tidy(ols), arg2)
 
 ## EOF
 ```
