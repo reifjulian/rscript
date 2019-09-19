@@ -1,7 +1,7 @@
 # RSCRIPT: call an *R* script from Stata.
 
 - Current version: `1.0.2 4sep2019`
-- Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`authors`](#authors)
+- Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
 
@@ -110,6 +110,14 @@ We then save the dataset into a tempfile, and call the *R* script that we wrote.
 Finally, we read in the results that were outputted from *R* into Stata and display them. We again have confirmation that that the point estimates and standard errors are the same in both Stata and *R*. 
 
 ![rscript output](images/stata_rscript_output.png)
+
+## Update History
+* **September 4, 2019**
+  - stderr is now parsed by Mata rather than Stata
+* **May 2, 2019**
+  - Default path is now set by the global macro RSCRIPT_PATH
+* **January 22, 2019**
+  - Added ```force``` option
 
 ## Authors:
 
