@@ -1,36 +1,50 @@
 # RSCRIPT: call an *R* script from Stata.
 
 - Current version: `1.0.2 4sep2019`
-- Jump to: [`updates`](#updates) [`install`](#install) [`description`](#description) [`authors`](#authors)
+- Jump to: [`overview`](#overview) [`install`](#install) [`authors`](#authors)
 
 -----------
 
-## Updates:
+## Overview 
 
-* **September 4, 2019**
-  - stderr is now parsed by Mata rather than Stata
+`rscript` is a [Stata](http://www.stata.com) command that runs an external *R* script within Stata. `rscript` makes debugging and logging easy by displaying *R* output and error messages in the Stata console and exiting Stata in error when the *R* script ends in error.
 
-* **May 2, 2019**
-  - Default path is now set by the global macro RSCRIPT_PATH
-
-* **January 22, 2019**
-  - Added ```force``` option
-
-## Install:
-
-Type `which rscript` at the Stata prompt to determine which version you have installed. To install the most recent version of `rscript`, copy/paste the following line of code:
+## Installation
 
 ```
+* Determine which version of -rscript- you have installed
+which rscript
+
+* Install the most recent version of -rscript-
 net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/master") replace
 ```
 
-## Description: 
+## Usage
 
-`rscript` is a [Stata](http://www.stata.com) command that runs an *R* script and displays the output in the Stata console.
+Calls to `rscript` must specify the path to the Rscript utility that comes with your *R* installation. Here are typical locations of the Rscript executable on common operating systems.
 
-For more details, see the Stata help file included in this package.
+```
+* Windows (R version X.Y.Z)
+C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe
 
-## Tutorial: 
+* Mac and Linux
+/usr/local/bin/Rscript
+```
+
+The `rscript` option `rpath(pathname)` specifies the location of the Rscript executable. The default is to call the executable specified by the global macro `RSCRIPT_PATH`. The following Stata code demonstrates both usages.
+
+```
+* Use the -rpath- option to specify the path to the Rscript executable
+rscript using filename.R, rpath("C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe")
+
+* Use global macro RSCRIPT_PATH to specify the path to the Rscript executable
+gloabl RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
+rscript using filename.R
+```
+
+For more details on `rscript` usage, see the Stata help file included in this package.
+
+## Tutorial 
 
 This tutorial assumes you have [installed](#install) the `rscript` Stata package and have successfully installed *R*, which is freely available [online](https://www.r-project.org). You also need to install the following *R* packages: `tidyverse`, `haven`, and `estimatr`. Install these packages by opening *R* and executing the following three lines of code:
 
