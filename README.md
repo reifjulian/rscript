@@ -1,7 +1,7 @@
 # RSCRIPT: call an *R* script from Stata.
 
 - Current version: `1.0.2 4sep2019`
-- Jump to: [`overview`](#overview) [`install`](#install) [`authors`](#authors)
+- Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`authors`](#authors)
 
 -----------
 
