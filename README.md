@@ -103,7 +103,7 @@ The Stata script begins by running the OLS regression in Stata
 
 ![Stata OLS output](images/stata_ols.png)
 
-We then save the dataset into a tempfile, and call the *R* script that we wrote. `rscript` reports that we are running the script `ols_robust.R` and feeding it two arguments, which corresponds to the names of the two tempfiles. `rscript` also reports the output produced by *R*. We can see here that the point estimates and standard errors are the same as those that were computed by Stata. (Don't worry about the `tidyverse` conflicts that are also reported. These namespace conflicts are quite common in *R*.)
+We then save the dataset into a tempfile and call the *R* script that we wrote. `rscript` reports that we are calling `ols_robust.R` and feeding it two arguments, which correspond to the names of the two tempfiles. `rscript` also reports the output produced by *R*. We can see here that the point estimates and standard errors are the same as those that were computed by Stata. (Don't worry about the `tidyverse` conflicts that are also reported. These namespace conflicts are quite common in *R*.)
 
 ![Running rscript](images/stata_rscript.png)
 
