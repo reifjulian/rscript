@@ -23,7 +23,7 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 Calls to `rscript` must specify the path to the Rscript utility that comes with your *R* installation. Here are typical locations of the Rscript executable on common operating systems.
 
-```
+```stata
 * Windows (R version X.Y.Z)
 C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe
 
@@ -33,7 +33,7 @@ C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe
 
 The `rscript` option `rpath(pathname)` specifies the location of the Rscript executable. The default is to call the executable specified by the global macro `RSCRIPT_PATH`. The following Stata code demonstrates both usages.
 
-```
+```stata
 * Use the -rpath- option to specify the path to the Rscript executable
 rscript using filename.R, rpath("C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe")
 
@@ -48,7 +48,7 @@ For more details on `rscript` usage, see the Stata help file included in this pa
 
 This tutorial assumes you have [installed](#install) the `rscript` Stata package and have successfully installed *R*, which is freely available [online](https://www.r-project.org). You also need to install the following *R* packages: `tidyverse`, `haven`, and `estimatr`. Install these packages by opening *R* and executing the following three lines of code:
 
-```
+```R
 install.packages('tidyverse', repos='http://cran.us.r-project.org')
 install.packages('haven', repos='http://cran.us.r-project.org')
 install.packages('estimatr', repos='http://cran.us.r-project.org')
@@ -56,7 +56,7 @@ install.packages('estimatr', repos='http://cran.us.r-project.org')
 
 We will write a Stata script that calls an *R* script and feeds it an input filename and an output filename. The *R* script will read in the input file, estimate an OLS regression with robust standard errors, and write the results out to the output file. Here is the *R* script:
 
-```
+```R
 # Required libraries. You may need to install them first, e.g., install.packages('tidyverse', repos='http://cran.us.r-project.org')
 library(tidyverse)
 library(haven)
@@ -84,7 +84,7 @@ write_csv(tidy(ols), arg2)
 ```
 Here is the Stata script:
 
-```
+```stata
 * Stata: OLS with robust standard errors
 sysuse auto, clear
 reg price mpg, robust
