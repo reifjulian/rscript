@@ -72,7 +72,7 @@ program define rscript, nclass
 	type `"`err'"'
 	
 	di as result "`="_"*80'"
-	di as result "...end R output"
+	di as result "...end R output"_n
 	
 	****************
 	* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
@@ -80,6 +80,7 @@ program define rscript, nclass
 	cap mata: parse_stderr("`err'")
 	if _rc==198 {
 		display as error "`using' ended with an error"
+		display as error "See stderr output above for details"
 		if "`force'"=="" error 198
 	}
 	else if _rc {
