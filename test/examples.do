@@ -28,13 +28,20 @@ rscript using example_1.R, args("Hello World!" "`t2'")
 confirm file "`t2'"
 erase "`t2'"
 
-* Example 2: replicate OLS with robust standard errors
+* Example 2: replicate OLS with robust standard errors (note: requires estimatr package)
 sysuse auto, clear
 reg price mpg, robust
 save "`t1'", replace
 rscript using example_2.R, args("`t1'" "`t2'")
 insheet using "`t2'", comma clear
 erase "`t2'"
+
+* Example 3: expanding ~ to user's home directory (unix/mac only, assumes rscript folder placed in user's home directory)
+if "`c(os)'"!="Windows" {
+	rscript using "~/rscript/test/example_1.R", args("Hello World!" "`t2'")
+	confirm file "`t2'"
+	erase "`t2'"	
+}
 
 ******************************
 * Generate intentional errors
