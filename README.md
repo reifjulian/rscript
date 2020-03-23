@@ -1,6 +1,6 @@
 # RSCRIPT: call an *R* script from Stata.
 
-- Current version: `1.0.2 4sep2019`
+- Current version: `1.0.3 23mar2020`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
@@ -112,6 +112,8 @@ Finally, we read in the results that were outputted from *R* into Stata and disp
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **March 23, 2020**
+  - Added support for pathnames with "~"
 * **September 4, 2019**
   - stderr is now parsed by Mata rather than Stata
 * **May 2, 2019**
