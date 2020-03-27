@@ -11,7 +11,7 @@
 
 ## Installation
 
-```
+```stata
 * Determine which version of -rscript- you have installed
 which rscript
 
@@ -38,7 +38,7 @@ The `rscript` option `rpath(pathname)` specifies the location of the Rscript exe
 rscript using filename.R, rpath("C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe")
 
 * Use global macro RSCRIPT_PATH to specify the path to the Rscript executable
-gloabl RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
+global RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
 rscript using filename.R
 ```
 
