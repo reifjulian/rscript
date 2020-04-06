@@ -54,7 +54,7 @@ install.packages('haven', repos='http://cran.us.r-project.org')
 install.packages('estimatr', repos='http://cran.us.r-project.org')
 ```
 
-We will write a Stata script that calls an *R* script, **ols_robust.R**, and feeds it an input filename and an output filename. The *R* script will read in the input file, estimate an OLS regression with robust standard errors, and write the results out to the output file. Here is the code for **ols_robust.R**:
+We will write a Stata script that calls an *R* script, **ols_robust.R**, and feeds it an input filename and an output filename. The *R* script will read the input file, estimate an OLS regression with robust standard errors, and write the results to the output file. Here is the code for **ols_robust.R**:
 
 ```R
 # Required libraries. You may need to install them first, e.g., install.packages('tidyverse', repos='http://cran.us.r-project.org')
@@ -103,7 +103,7 @@ The Stata script begins by running the OLS regression in Stata
 
 ![Stata OLS output](images/stata_ols.png)
 
-We then save the dataset into a tempfile and call the *R* script that we wrote. `rscript` reports that we are calling `ols_robust.R` and feeding it two arguments, which correspond to the names of the two tempfiles. `rscript` also reports the output produced by *R*. We can see here that the point estimates and standard errors are the same as those that were computed by Stata. (Don't worry about the `tidyverse` conflicts that are also reported. These namespace conflicts are quite common in *R*.)
+We then save the dataset into a tempfile and call the *R* script that we wrote. `rscript` reports that we are calling **ols_robust.R** and feeding it two arguments, which correspond to the names of the two tempfiles. `rscript` also reports the output produced by *R*. We can see here that the point estimates and standard errors are the same as those that were computed by Stata. (Don't worry about the `tidyverse` conflicts that are also reported. These namespace conflicts are quite common in *R*.)
 
 ![Running rscript](images/stata_rscript.png)
 
