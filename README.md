@@ -54,7 +54,7 @@ install.packages('haven', repos='http://cran.us.r-project.org')
 install.packages('estimatr', repos='http://cran.us.r-project.org')
 ```
 
-We will write a Stata script that calls an *R* script and feeds it an input filename and an output filename. The *R* script will read in the input file, estimate an OLS regression with robust standard errors, and write the results out to the output file. Here is the *R* script:
+We will write a Stata script that calls an *R* script, **ols_robust.R**, and feeds it an input filename and an output filename. The *R* script will read in the input file, estimate an OLS regression with robust standard errors, and write the results out to the output file. Here is the code for **ols_robust.R**:
 
 ```R
 # Required libraries. You may need to install them first, e.g., install.packages('tidyverse', repos='http://cran.us.r-project.org')
