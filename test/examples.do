@@ -43,15 +43,14 @@ if "`c(os)'"!="Windows" {
 	erase "`t2'"	
 }
 
+* If rscript.exe not specified, employ system default
+global RSCRIPT_PATH ""
+rscript using example_1.R, args("Hello World!" "`t2'")
+global RSCRIPT_PATH "`rscript_exe'"
+
 ******************************
 * Generate intentional errors
 ******************************
-
-* Failing to specify location of rscript.exe
-di as text "Location of R executable must be specified using option rpath() or using the global RSCRIPT_PATH"
-global RSCRIPT_PATH ""
-rcof noi rscript using example_1.R, args("Hello World!" "`t2'")==198
-global RSCRIPT_PATH "`rscript_exe'"
 
 * Specifying wrong file path
 di as text "file xxx:/xxx not found"
