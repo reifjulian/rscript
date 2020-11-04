@@ -1,10 +1,10 @@
-*! rscript 1.0.4 2nov2020 by David Molitor and Julian Reif
+*! rscript 1.0.4 4nov2020 by David Molitor and Julian Reif
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
 * 1.0.2: stderr is now parsed by Mata instead of Stata
 * 1.0.1: updated error handling
 
-program define rscript, nclass
+program define rscript, rclass
 
 	version 13.0
 
@@ -34,7 +34,7 @@ program define rscript, nclass
 				if _rc local rpath "/usr/bin/Rscript"
 			}
 			
-			* Windows default path: C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe
+			* Windows default path: "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe" (newest version)
 			else if "`os'" == "windows" {
 			  local subdirs : dir "C:/Program Files/R/" dirs "R-?.?.?", respectcase
 			  local subdirs : list clean subdirs
@@ -103,7 +103,9 @@ program define rscript, nclass
 	else {
 		shell "`rpath'" "`using'" `args' > `out' 2>`err'
 	}
-
+	
+	return local rpath `rpath'
+	
 	****************
 	* Display stdout and stderr output
 	****************
@@ -118,6 +120,7 @@ program define rscript, nclass
 	
 	di as result "`="_"*80'"
 	di as result "...end R output"_n
+	
 	
 	****************
 	* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
