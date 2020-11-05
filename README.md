@@ -105,7 +105,7 @@ Finally, we read in the results that were outputted from *R* into Stata and disp
 
 ## Update History
 * **November 4, 2020**
-  - Default path now available when `RSCRIPT_PATH` and `rpath()` not specified
+  - `rscript` now searches for the R executable if `RSCRIPT_PATH` undefined and `rpath()` not specified
 * **March 23, 2020**
   - Added support for pathnames with "~"
 * **September 4, 2019**
