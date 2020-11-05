@@ -104,14 +104,16 @@ Finally, we read in the results that were outputted from *R* into Stata and disp
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **November 4, 2020**
+  - Default path now available when `RSCRIPT_PATH` and `rpath()` not specified
 * **March 23, 2020**
   - Added support for pathnames with "~"
 * **September 4, 2019**
   - stderr is now parsed by Mata rather than Stata
 * **May 2, 2019**
-  - Default path is now set by the global macro RSCRIPT_PATH
+  - Default path is now set by the global macro `RSCRIPT_PATH`
 * **January 22, 2019**
-  - Added ```force``` option
+  - Added `force` option
 
 ## Authors:
 
