@@ -22,8 +22,9 @@ program define rscript, rclass
 	* If both are blank, then try using an os-specific default
 	if mi(`"`rpath'"') {
 		local rpath `"$RSCRIPT_PATH"'
+		local no_default_rpath = mi(`"`rpath'"')
 		
-		if mi(`"`rpath'"') {
+		if `no_default_rpath' {
 			
 			local os = lower("`c(os)'")
 			
@@ -32,6 +33,8 @@ program define rscript, rclass
 				local rpath "/usr/local/bin/Rscript"
 				cap confirm file "`rpath'"
 				if _rc local rpath "/usr/bin/Rscript"
+				cap confirm file "`rpath'"
+				if _rc local rpath 
 			}
 			
 			* Windows default path: "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe" (newest version)
@@ -40,16 +43,21 @@ program define rscript, rclass
 			  local subdirs : list clean subdirs
 			  local subdirs : list sort subdirs
 			  local ndirs   : list sizeof subdirs
-			  local newest  : word `ndirs' of `subdirs'
-			  local rpath "C:/Program Files/R/`newest'/bin/Rscript.exe"
-			}
-			else {
-				di as error "Specify R executable using option rpath() or using the global RSCRIPT_PATH"
-				exit 198	
+				if `ndirs' > 0 {
+					local newest  : word `ndirs' of `subdirs'
+					local rpath "C:/Program Files/R/`newest'/bin/Rscript.exe"
+				}
 			}
 			
-			di as result `"Using default path: `rpath'"'
+			local no_default_rpath = mi(`"`rpath'"')
 		}
+		
+		if `no_default_rpath' {
+			di as error "No default R executable found. Specify R executable using option rpath() or using the global RSCRIPT_PATH"
+			exit 198	
+		}
+		
+		di as result `"Using default path: `rpath'"'
 	}
 	
 	cap confirm file "`rpath'"
