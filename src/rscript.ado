@@ -1,4 +1,4 @@
-*! rscript 1.0.4 4nov2020 by David Molitor and Julian Reif
+*! rscript 1.0.4 25nov2020 by David Molitor and Julian Reif
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
 * 1.0.2: stderr is now parsed by Mata instead of Stata
@@ -39,10 +39,10 @@ program define rscript, rclass
 			
 			* Windows default path: "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe" (newest version)
 			else if "`os'" == "windows" {
-			  local subdirs : dir "C:/Program Files/R/" dirs "R-?.?.?", respectcase
-			  local subdirs : list clean subdirs
-			  local subdirs : list sort subdirs
-			  local ndirs   : list sizeof subdirs
+				local subdirs : dir "C:/Program Files/R/" dirs "R-?.?.?", respectcase
+				local subdirs : list clean subdirs
+				local subdirs : list sort subdirs
+				local ndirs   : list sizeof subdirs
 				if `ndirs' > 0 {
 					local newest  : word `ndirs' of `subdirs'
 					local rpath "C:/Program Files/R/`newest'/bin/Rscript.exe"
