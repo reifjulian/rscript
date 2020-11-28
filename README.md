@@ -1,6 +1,6 @@
 # RSCRIPT: call an *R* script from Stata.
 
-- Current version: `1.0.3 23mar2020`
+- Current version: `1.0.4 25nov2020`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
@@ -21,26 +21,18 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 ## Usage
 
-Calls to `rscript` must specify the path to the Rscript utility that comes with your *R* installation. Here are typical locations of the Rscript executable on common operating systems.
+`rscript` works by calling the Rscript executable that comes with your *R* installation. You can specify the location of this executable using the  option `rpath(pathname)` or by specifying the global macro `RSCRIPT_PATH`. The following code demonstrates both usages.
 
 ```stata
-* Windows (R version X.Y.Z)
-C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe
-
-* Mac and Linux
-/usr/local/bin/Rscript
-```
-
-The `rscript` option `rpath(pathname)` specifies the location of the Rscript executable. The default is to call the executable specified by the global macro `RSCRIPT_PATH`. The following Stata code demonstrates both usages.
-
-```stata
-* Use the -rpath- option to specify the path to the Rscript executable
+* Use the -rpath()- option to specify the path to the Rscript executable
 rscript using filename.R, rpath("C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe")
 
 * Use global macro RSCRIPT_PATH to specify the path to the Rscript executable
 global RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
 rscript using filename.R
 ```
+
+On Mac/Linux, the Rscript path is typically `/usr/local/bin/Rscript` or `/usr/bin/Rscript`. On Windows, the path for R version X.Y.Z is typically `C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe`. If you don't specify a path, `rscript` will try to find Rscript on its own by searching commonly used paths.
 
 For more details on `rscript` usage, see the Stata help file included in this package.
 
@@ -112,14 +104,16 @@ Finally, we read in the results that were outputted from *R* into Stata and disp
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **November 25, 2020**
+  - `rscript` now searches for the R executable if `RSCRIPT_PATH` undefined and `rpath()` not specified
 * **March 23, 2020**
   - Added support for pathnames with "~"
 * **September 4, 2019**
   - stderr is now parsed by Mata rather than Stata
 * **May 2, 2019**
-  - Default path is now set by the global macro RSCRIPT_PATH
+  - Default path is now set by the global macro `RSCRIPT_PATH`
 * **January 22, 2019**
-  - Added ```force``` option
+  - Added `force` option
 
 ## Authors:
 
