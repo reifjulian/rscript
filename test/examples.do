@@ -37,7 +37,7 @@ insheet using "`t2'", comma clear
 erase "`t2'"
 
 * Example 3: expanding ~ to user's home directory (unix/mac only)
-* Note: for this example to work, rscript Github folder must be placed in user's home directory)
+* Note: for this example to work, the /rscript folder must be placed in user's home directory)
 if "`c(os)'"!="Windows" {
 	rscript using "~/rscript/test/example_1.R", args("Hello World!" "`t2'")
 	confirm file "`t2'"
