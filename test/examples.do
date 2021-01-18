@@ -14,19 +14,32 @@ assert !mi("`rscript_exe'")
 * Run examples and verify output
 ******************************
 
-* Specify location of R and run example_1.R. Should work regardless of whether global RSCRIPT_PATH was specified
-rscript using example_1.R, rpath("`rscript_exe'") args("arg1 with spaces" "`t1'")
-global RSCRIPT_PATH ""
-rscript using example_1.R, rpath("`rscript_exe'") args("arg1 with spaces" "`t1'")
-global RSCRIPT_PATH "`rscript_exe'"
+***
+* Example 1
+***
+
+* (a) using $RSCRIPT_PATH 
+rscript using example_1.R, args("arg1 with spaces" "`t1'")
 confirm file "`t1'"
 erase "`t1'"
 
-* Use a default path and run example_1.R (not working on OS X currently)
+* (b) using rpath(), with and without RSCRIPT_PATH defined
+rscript using example_1.R, rpath("`rscript_exe'") args("arg1 with spaces" "`t1'")
+confirm file "`t1'"
+erase "`t1'"
+
+global RSCRIPT_PATH ""
+rscript using example_1.R, rpath("`rscript_exe'") args("arg1 with spaces" "`t1'")
+confirm file "`t1'"
+erase "`t1'"
+
+* (c) using default path (should be noted in text output)
+di "Using default path: "
+rscript using example_1.R, args("arg1 with spaces" "`t1'")
+confirm file "`t1'"
+erase "`t1'"
+
 global RSCRIPT_PATH "`rscript_exe'"
-rscript using example_1.R, args("Hello World!" "`t2'")
-confirm file "`t2'"
-erase "`t2'"
 
 * Example 2: replicate OLS with robust standard errors (note: requires estimatr package)
 sysuse auto, clear
@@ -34,6 +47,7 @@ reg price mpg, robust
 save "`t1'", replace
 rscript using example_2.R, args("`t1'" "`t2'")
 insheet using "`t2'", comma clear
+assert abs(stderror - 57.47701)<0.0001 & abs(estimate+238.8943)<0.0001 if term=="mpg"
 erase "`t2'"
 
 * Example 3: expanding ~ to user's home directory (unix/mac only)
@@ -44,22 +58,17 @@ if "`c(os)'"!="Windows" {
 	erase "`t2'"	
 }
 
-* If rscript.exe not specified, employ system default
-global RSCRIPT_PATH ""
-rscript using example_1.R, args("Hello World!" "`t2'")
-global RSCRIPT_PATH "`rscript_exe'"
-
 ******************************
 * Generate intentional errors
 ******************************
 
 * Specifying wrong file path
-di as text "file xxx:/xxx not found"
+di as error "R executable not found. Specify R executable using option rpath() or using the global RSCRIPT_PATH"
 rcof noi rscript using example_1.R, args("Hello World!" "`t2'") rpath("xxx:/xxx")==601
 assert _rc==601
 
 * Example_error.R has an error in the R code ("Error: object 'error_command' not found"), so rscript should return _rc==198
-di as text "example_error.R ended with an error" _n "invalid syntax"
+di as error "example_error.R ended with an error" _n "See stderr output above for details" _n "invalid syntax"
 rcof noi rscript using example_error.R, args("arg1 with spaces" "`t1'")==198
 
 

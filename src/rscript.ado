@@ -1,4 +1,5 @@
-*! rscript 1.0.4 25nov2020 by David Molitor and Julian Reif
+*! rscript 1.0.5 18jan2021 by David Molitor and Julian Reif
+* 1.0.5: fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
 * 1.0.2: stderr is now parsed by Mata instead of Stata
@@ -22,9 +23,8 @@ program define rscript, rclass
 	* If both are blank, then try using an os-specific default
 	if mi(`"`rpath'"') {
 		local rpath `"$RSCRIPT_PATH"'
-		local no_default_rpath = mi(`"`rpath'"')
 		
-		if `no_default_rpath' {
+		if mi(`"`rpath'"') {
 			
 			local os = lower("`c(os)'")
 			
@@ -49,15 +49,12 @@ program define rscript, rclass
 				}
 			}
 			
-			local no_default_rpath = mi(`"`rpath'"')
+			if mi(`"`rpath'"') {
+				di as error "No default R executable found. Specify R executable using option rpath() or using the global RSCRIPT_PATH"
+				exit 198	
+			}
+			else di as result `"Using default path: `rpath'"'
 		}
-		
-		if `no_default_rpath' {
-			di as error "No default R executable found. Specify R executable using option rpath() or using the global RSCRIPT_PATH"
-			exit 198	
-		}
-		
-		di as result `"Using default path: `rpath'"'
 	}
 	
 	cap confirm file "`rpath'"
