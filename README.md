@@ -1,6 +1,6 @@
 # RSCRIPT: call an *R* script from Stata.
 
-- Current version: `1.0.4 25nov2020`
+- Current version: `1.0.5 18jan2020`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
@@ -104,6 +104,8 @@ Finally, we read in the results that were outputted from *R* into Stata and disp
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **January 18, 2021**
+  - Edited output text for case when not using a default path (no effect on functionality)
 * **November 25, 2020**
   - `rscript` now searches for the R executable if `RSCRIPT_PATH` undefined and `rpath()` not specified
 * **March 23, 2020**
