@@ -32,12 +32,12 @@ global RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
 rscript using filename.R
 
 * Let rscript search for the executable on its own
-* rscript using filename.R
+rscript using filename.R
 ```
 
 On Mac/Linux, the Rscript path is typically `/usr/local/bin/Rscript` or `/usr/bin/Rscript`. On Windows, the path for R version X.Y.Z is typically `C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe`.
 
-For more details on `rscript` usage, see the Stata help file included in this package.
+For more details, see the Stata help file included in this package.
 
 ## Tutorial 
 
