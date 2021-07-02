@@ -12,12 +12,17 @@ program define rscript, rclass
 	tempfile shell out err
 	tempname shellfile
 
-	syntax using/, [rpath(string) args(string asis) rversion(numlist min=1 max=2 >0) force]
+	syntax [using/], [rpath(string) args(string asis) rversion(numlist min=1 max=2 >0) force]
 	
 	****************
 	* Error checking
-	****************	
-	confirm file "`using'"
+	****************
+	* user must specify a filename, unless rversion() was specified
+	if mi("`rversion'") & mi("`using'") {
+		di as error "using required"
+		exit 100
+	}
+	if !mi("`using'") confirm file "`using'"
 	
 	* If user does not specify the location of the R executable, set the default to what is stored in RSCRIPT_PATH
 	* If both are blank, then try using an os-specific default
@@ -75,6 +80,19 @@ program define rscript, rclass
 		cd "`workdir_orig'"
 		confirm file "`using'"
 	}
+	
+	****************
+	* Detect shell version
+	****************	
+	* Syntax for the -shell- call depends on which version of the shell is running:
+	*	Unix csh:  /bin/csh
+	*	Unix tcsh: /usr/local/bin/tcsh (default on NBER server)
+	*	Unix bash: /bin/bash
+	*	Windows
+	shell echo "$0" > `shell'
+	file open `shellfile' using `"`shell'"', read
+	file read `shellfile' shellline
+	file close `shellfile'		
 
 	****************
 	* Version control. Redirect stdout to `out' and stderr to `err'
@@ -82,8 +100,20 @@ program define rscript, rclass
 	if !mi("`rversion'") {
 	    local rversion_script "$GITHUB/rscript/src/_rversion.R"
 		
-	    shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
+		* shell call differs for csh/bash/other (windows is "other")
+		if strpos("`shellline'", "csh") {	
+			shell ("`rpath'" "`rversion_script'" `rversion' > `out') >& `err'
+		}
+
+		else if strpos("`shellline'", "bash") {
+			shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
+		}
+
+		else {
+			shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
+		}
 		
+		* Report results from version control call
 		di as result "Version information:"
 		type `"`out'"'
 		di as result ""
@@ -108,28 +138,16 @@ program define rscript, rclass
 	di as result `"Running R script: `using'"'
 	if !mi(`"`args'"') di as result `"Args: `args'"'	
 	di as result _n
-		
-	* Syntax for the -shell- call depends on which version of the shell is running:
-	*	Unix csh:  /bin/csh
-	*	Unix tcsh: /usr/local/bin/tcsh (default on NBER server)
-	*	Unix bash: /bin/bash
-	*	Windows
-	shell echo "$0" > `shell'
-	file open `shellfile' using `"`shell'"', read
-	file read `shellfile' shellline
-	file close `shellfile'	
 	
-	* Unix: tcsh or csh shell
+	* shell call differs for csh/bash/other (windows is "other")
 	if strpos("`shellline'", "csh") {	
 		shell ("`rpath'" "`using'" `args' > `out') >& `err'
 	}
 	
-	* Unix: bash shell
 	else if strpos("`shellline'", "bash") {
 		shell "`rpath'" "`using'" `args' > `out' 2>`err'
 	}
 	
-	* Other (including Windows)
 	else {
 		shell "`rpath'" "`using'" `args' > `out' 2>`err'
 	}

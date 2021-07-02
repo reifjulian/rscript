@@ -15,6 +15,12 @@ rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
 confirm file "`t1'"
 erase "`t1'"
 
+cap rscript using missing.R, args("arg1 with spaces" "`t1'")
+assert _rc==601
+
+cap rscript, args("arg1 with spaces" "`t1'")
+assert _rc==100
+
 ******************************
 * Run examples and verify output
 ******************************
