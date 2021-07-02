@@ -1,5 +1,5 @@
-*! rscript 1.0.5 18jan2021 by David Molitor and Julian Reif
-* 1.0.5: fixed text output when using RSCRIPT_PATH
+*! rscript 1.0.5 2jul2021 by David Molitor and Julian Reif
+* 1.0.5: added rversion() option. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
 * 1.0.2: stderr is now parsed by Mata instead of Stata
@@ -12,7 +12,7 @@ program define rscript, rclass
 	tempfile shell out err
 	tempname shellfile
 
-	syntax using/, [rpath(string) args(string asis) force]
+	syntax using/, [rpath(string) args(string asis) rversion(numlist min=1 max=2 >0) force]
 	
 	****************
 	* Error checking
@@ -74,6 +74,31 @@ program define rscript, rclass
 		local using "`c(pwd)'/`fname'"
 		cd "`workdir_orig'"
 		confirm file "`using'"
+	}
+
+	****************
+	* Version control. Redirect stdout to `out' and stderr to `err'
+	****************
+	if !mi("`rversion'") {
+	    local rversion_script "$GITHUB/rscript/src/_rversion.R"
+		
+	    shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
+		
+		di as result "Version information:"
+		type `"`out'"'
+		di as result ""
+		type `"`err'"'
+		
+		cap mata: parse_stderr("`err'")
+		if _rc==198 {
+			di as error "This R installation does not meet the version requirements specified in rversion()"
+			di as error _skip(5) `"You can download the version you need by visiting {browse "https://www.r-project.org"}"'
+			error 9
+		}
+		else if _rc {
+			di as error "Encountered a problem while parsing stderr"
+			di as error "Mata error code: " _rc
+		}		
 	}
 	
 	****************

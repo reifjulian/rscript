@@ -10,6 +10,11 @@ program drop _all
 local rscript_exe "$RSCRIPT_PATH"
 assert !mi("`rscript_exe'")
 
+* rversion example
+rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
+confirm file "`t1'"
+erase "`t1'"
+
 ******************************
 * Run examples and verify output
 ******************************
