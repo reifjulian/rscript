@@ -19,16 +19,10 @@
 ########
 
 args = commandArgs(trailingOnly = "TRUE")
-if (length(args)) {
-  rmin <- args[1]
-  rmax <- args[2]
+rmin <- args[1]
+rmax <- args[2]
+
   
-  if (length(args) == 1) rmax <- rmin
-  if (length(args) > 2) stop('Too many arguments.')
-
-} else stop('Arguments required.')
-
-
 ###
 # Base R version control
 ###
@@ -43,11 +37,12 @@ if (rcurrent < rmin) {
 }
 
 # Maximum version requirements (optional)
-if (rcurrent > rmax & length(args) == 2) {
-  vers_ex_msg = paste0("This R installation is newer than version ", rmax)
-  stop(vers_ex_msg)
+if (rmax != '-1') {
+  if (rcurrent > rmax ) {
+    vers_ex_msg = paste0("This R installation is newer than version ", rmax)
+    stop(vers_ex_msg)
+  }
 }
-
 
 ##EOF
 

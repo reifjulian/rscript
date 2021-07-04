@@ -14,9 +14,9 @@ program define rscript, rclass
 
 	syntax [using/], [rpath(string) args(string asis) rversion(numlist min=1 max=2 >0) force]
 	
-	****************
+	************************************************
 	* Error checking
-	****************
+	************************************************
 	* user must specify a filename, unless rversion() was specified
 	if mi("`rversion'") & mi("`using'") {
 		di as error "using required"
@@ -81,9 +81,9 @@ program define rscript, rclass
 		confirm file "`using'"
 	}
 	
-	****************
+	************************************************
 	* Detect shell version
-	****************	
+	************************************************	
 	* Syntax for the -shell- call depends on which version of the shell is running:
 	*	Unix csh:  /bin/csh
 	*	Unix tcsh: /usr/local/bin/tcsh (default on NBER server)
@@ -94,11 +94,14 @@ program define rscript, rclass
 	file read `shellfile' shellline
 	file close `shellfile'		
 
-	****************
+	************************************************
 	* Version control. Redirect stdout to `out' and stderr to `err'
-	****************
+	************************************************
 	if !mi("`rversion'") {
-	    local rversion_script "$GITHUB/rscript/src/_rversion.R"
+
+		if wordcount("`rversion'")==1 local rversion "`rversion' -1"
+		
+		local rversion_script "$GITHUB/rscript/src/_rversion.R"
 		
 		* shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
@@ -113,7 +116,7 @@ program define rscript, rclass
 			shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
 		}
 		
-		* Report results from version control call
+		* Report output from version control call
 		di as result "Version information:"
 		type `"`out'"'
 		di as result ""
@@ -131,9 +134,9 @@ program define rscript, rclass
 		}		
 	}
 	
-	****************
+	************************************************
 	* Run the script. Redirect stdout to `out' and stderr to `err'
-	****************
+	************************************************
 
 	di as result `"Running R script: `using'"'
 	if !mi(`"`args'"') di as result `"Args: `args'"'	
@@ -154,9 +157,9 @@ program define rscript, rclass
 	
 	return local rpath `rpath'
 	
-	****************
+	************************************************
 	* Display stdout and stderr output
-	****************
+	************************************************
 	di as result "Begin R output:"
 	di as result "`="_"*80'"
 	
@@ -170,9 +173,9 @@ program define rscript, rclass
 	di as result "...end R output"_n
 	
 	
-	****************
+	************************************************
 	* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
-	****************
+	************************************************
 	cap mata: parse_stderr("`err'")
 	if _rc==198 {
 		display as error "`using' ended with an error"
@@ -196,6 +199,10 @@ program define rscript, rclass
 		display as error "Mata error code: " _rc
 	}	
 end
+
+********************************
+* AUXILIARY FUNCTIONS
+********************************
 
 * Parse the stderr and stdout output files to check for errors
 mata:
