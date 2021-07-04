@@ -10,8 +10,11 @@ program drop _all
 local rscript_exe "$RSCRIPT_PATH"
 assert !mi("`rscript_exe'")
 
-* rversion example
+* rversion checks. Note, rscript, rversion(5.0 1.5) is allowable (but nonsensical) syntax
 rscript, rversion(3.6.0)
+
+cap rscript, rversion(1.5 1.5)
+assert _rc==9
 
 rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
 confirm file "`t1'"
