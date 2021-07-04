@@ -11,6 +11,8 @@ local rscript_exe "$RSCRIPT_PATH"
 assert !mi("`rscript_exe'")
 
 * rversion example
+rscript, rversion(3.6.0)
+
 rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
 confirm file "`t1'"
 erase "`t1'"
@@ -20,6 +22,15 @@ assert _rc==601
 
 cap rscript, args("arg1 with spaces" "`t1'")
 assert _rc==100
+
+cap rscript, rversion(3.6.0 3.2 1)
+assert _rc==198
+
+cap rscript, rversion(3.6..0)
+assert _rc==198
+
+cap rscript, rversion(-3.6.0)
+assert _rc==198
 
 ******************************
 * Run examples and verify output

@@ -1,4 +1,4 @@
-*! rscript 1.0.5 2jul2021 by David Molitor and Julian Reif
+*! rscript 1.0.5 4jul2021 by David Molitor and Julian Reif
 * 1.0.5: added rversion() option. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -12,12 +12,12 @@ program define rscript, rclass
 	tempfile shell out err
 	tempname shellfile
 
-	syntax [using/], [rpath(string) args(string asis) rversion(numlist min=1 max=2 >0) force]
+	syntax [using/], [rpath(string) args(string asis) rversion(string) force]
 	
 	************************************************
 	* Error checking
 	************************************************
-	* user must specify a filename, unless rversion() was specified
+	* User must specify a filename, unless rversion() was specified
 	if mi("`rversion'") & mi("`using'") {
 		di as error "using required"
 		exit 100
@@ -81,6 +81,35 @@ program define rscript, rclass
 		confirm file "`using'"
 	}
 	
+	* Ensure valid version numbers were passed to version()
+	if !mi(`"`rversion'"') {
+		if wordcount(`"`rversion'"')>2 {
+			di as error "rversion() invalid -- too many elements"
+			exit 198
+		}
+		
+		tokenize `"`rversion'"'
+		while !mi(`"`1'"') {
+			if strpos(`"`1'"',"..") {
+				di as error `"rversion() invalid: `1' is invalid version number"'
+				exit 198
+			}
+			
+			* The following regex:
+			*   (1) allows trailing and leading spaces
+			*   (2) requires first and last elements to be a digit
+			*   (3) allows middle to have arbitrary number of digits and decimals
+			if !regexm(`"`1'"',"^[ ]*[0-9][.0-9]*[0-9] *$") {
+				di as error `"rversion() invalid: `1' is invalid version number"'
+				exit 198					
+			}			
+			macro shift
+		}
+		
+		* Second argument to rversion is optional; set to -1 if not specified
+		if wordcount(`"`rversion'"')==1 local rversion `"`rversion' -1"'
+	}
+	
 	************************************************
 	* Detect shell version
 	************************************************	
@@ -97,9 +126,7 @@ program define rscript, rclass
 	************************************************
 	* Version control. Redirect stdout to `out' and stderr to `err'
 	************************************************
-	if !mi("`rversion'") {
-
-		if wordcount("`rversion'")==1 local rversion "`rversion' -1"
+	if !mi(`"`rversion'"') {
 		
 		local rversion_script "$GITHUB/rscript/src/_rversion.R"
 		
@@ -137,67 +164,70 @@ program define rscript, rclass
 	************************************************
 	* Run the script. Redirect stdout to `out' and stderr to `err'
 	************************************************
-
-	di as result `"Running R script: `using'"'
-	if !mi(`"`args'"') di as result `"Args: `args'"'	
-	di as result _n
+	if !mi("`using'") {
+		
+		di as result `"Running R script: `using'"'
+		if !mi(`"`args'"') di as result `"Args: `args'"'	
+		di as result _n
+		
+		* shell call differs for csh/bash/other (windows is "other")
+		if strpos("`shellline'", "csh") {	
+			shell ("`rpath'" "`using'" `args' > `out') >& `err'
+		}
+		
+		else if strpos("`shellline'", "bash") {
+			shell "`rpath'" "`using'" `args' > `out' 2>`err'
+		}
+		
+		else {
+			shell "`rpath'" "`using'" `args' > `out' 2>`err'
+		}
+		
+		return local rpath `rpath'
+		
+		************************************************
+		* Display stdout and stderr output
+		************************************************
+		di as result "Begin R output:"
+		di as result "`="_"*80'"
+		
+		di as result "{ul:stdout}:"
+		type `"`out'"'
+		di as result _n
+		di as result "{ul:stderr}:"
+		type `"`err'"'
+		
+		di as result "`="_"*80'"
+		di as result "...end R output"_n
+		
+		
+		************************************************
+		* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
+		************************************************
+		cap mata: parse_stderr("`err'")
+		if _rc==198 {
+			display as error "`using' ended with an error"
+			display as error "See stderr output above for details"
+			if "`force'"=="" error 198
+		}
+		else if _rc {
+			display as error "Encountered a problem while parsing stderr"
+			display as error "Mata error code: " _rc
+		}
+		
+		* In a few (rare) cases, a "fatal error" message will be written to stdout rather than stderr
+		cap mata: parse_stdout("`out'")
+		if _rc==198 {
+			display as error "`using' ended with a fatal error"
+			display as error "See stdout output above for details"
+			if "`force'"=="" error 198
+		}
+		else if _rc {
+			display as error "Encountered a problem while parsing stdout"
+			display as error "Mata error code: " _rc
+		}
 	
-	* shell call differs for csh/bash/other (windows is "other")
-	if strpos("`shellline'", "csh") {	
-		shell ("`rpath'" "`using'" `args' > `out') >& `err'
 	}
-	
-	else if strpos("`shellline'", "bash") {
-		shell "`rpath'" "`using'" `args' > `out' 2>`err'
-	}
-	
-	else {
-		shell "`rpath'" "`using'" `args' > `out' 2>`err'
-	}
-	
-	return local rpath `rpath'
-	
-	************************************************
-	* Display stdout and stderr output
-	************************************************
-	di as result "Begin R output:"
-	di as result "`="_"*80'"
-	
-	di as result "{ul:stdout}:"
-	type `"`out'"'
-	di as result _n
-	di as result "{ul:stderr}:"
-	type `"`err'"'
-	
-	di as result "`="_"*80'"
-	di as result "...end R output"_n
-	
-	
-	************************************************
-	* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
-	************************************************
-	cap mata: parse_stderr("`err'")
-	if _rc==198 {
-		display as error "`using' ended with an error"
-		display as error "See stderr output above for details"
-		if "`force'"=="" error 198
-	}
-	else if _rc {
-		display as error "Encountered a problem while parsing stderr"
-		display as error "Mata error code: " _rc
-	}
-	
-	* In a few (rare) cases, a "fatal error" message will be written to stdout rather than stderr
-	cap mata: parse_stdout("`out'")
-	if _rc==198 {
-		display as error "`using' ended with a fatal error"
-		display as error "See stdout output above for details"
-		if "`force'"=="" error 198
-	}
-	else if _rc {
-		display as error "Encountered a problem while parsing stdout"
-		display as error "Mata error code: " _rc
-	}	
 end
 
 ********************************
