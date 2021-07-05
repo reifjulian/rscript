@@ -10,6 +10,7 @@ program drop _all
 local rscript_exe "$RSCRIPT_PATH"
 assert !mi("`rscript_exe'")
 
+
 ******************************
 * Run examples and verify output
 ******************************
@@ -94,6 +95,14 @@ rcof noi rscript, rversion(3.6..0)
 assert _rc==198
 
 rcof noi rscript, rversion(-3.6.0)
+assert _rc==198
+
+rscript, rversion(3.6) require("tidyverse")
+
+rcof noi rscript, rversion(3.6) require("tidyverse" "fakepackage")
+assert _rc==9
+
+rcof noi rscript, require("hi" 3 "32hi" "tidyverse" `"32""')
 assert _rc==198
 
 ***

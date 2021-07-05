@@ -110,6 +110,20 @@ program define rscript, rclass
 		if wordcount(`"`rversion'"')==1 local rversion `"`rversion' -1"'
 	}
 	
+	* Ensure no quotation marks passed to require()
+	if !mi(`"`require'"') {
+		
+		tokenize `"`require'"'
+		while !mi(`"`1'"') {
+			if strpos(`"`1'"',`"""') {
+				di as error "require() invalid: embedded quotation marks not allowed"
+				exit 198
+			}			
+			macro shift
+		}		
+
+	}
+	
 	
 	************************************************
 	* Detect shell version
