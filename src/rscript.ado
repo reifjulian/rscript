@@ -1,4 +1,4 @@
-*! rscript 1.0.5 4jul2021 by David Molitor and Julian Reif
+*! rscript 1.0.5 5jul2021 by David Molitor and Julian Reif
 * 1.0.5: added rversion() option. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -166,7 +166,7 @@ program define rscript, rclass
 		di as result ""
 		type `"`err'"'
 		
-		cap mata: parse_stderr("`err'")
+		cap mata: parse_stderr_version_control("`err'")
 		if _rc==198 {
 			di as error "This R installation does not meet the version requirements specified in rversion()"
 			di as error _skip(5) `"You can download the version you need by visiting {browse "https://www.r-project.org"}"'
@@ -252,7 +252,22 @@ end
 ********************************
 
 * Parse the stderr and stdout output files to check for errors
+* Employ separate function for parsing the version control script created by rversion() and require() options
 mata:
+void parse_stderr_version_control(string scalar filename)
+{
+	real scalar input_fh
+	string scalar line
+
+	input_fh = fopen(filename, "r")
+	
+	while ((line=fget(input_fh)) != J(0,0,"")) {
+		if (strpos(strlower(line), "error")!=0) exit(error(198))
+	}
+	
+	fclose(input_fh)
+}
+
 void parse_stderr(string scalar filename)
 {
 	real scalar input_fh

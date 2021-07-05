@@ -54,7 +54,7 @@ if(length(args)==3) {
   installed <- packages %in% installed.packages()[, "Package"]
 
   if(any(!installed)) {
-    vers_ex_msg = paste0("The following packages are not installed:\n  ", paste(packages[indx],collapse="\n  "))
+    vers_ex_msg = paste0("The following packages are not installed:\n  ", paste(packages[!installed],collapse="\n  "))
     stop(vers_ex_msg)
   }
 }
