@@ -167,11 +167,16 @@ program define rscript, rclass
 		type `"`err'"'
 		
 		cap mata: parse_stderr_version_control("`err'")
-		if _rc==198 {
+		if _rc==1 {
 			di as error "This R installation does not meet the version requirements specified in rversion()"
-			di as error _skip(5) `"You can download the version you need by visiting {browse "https://www.r-project.org"}"'
+			di as error _skip(2) `"You can download the version you need by visiting {browse "https://www.r-project.org"}"'
 			error 9
 		}
+		else if _rc==2 {
+			di as error "This R installation is missing packages specified in require()"
+			di as error _skip(2) `"Packages can usually be installed by typing install.packages("X") at the R prompt, where X is the name of the package"'
+			error 9
+		}		
 		else if _rc {
 			di as error "Encountered a problem while parsing stderr"
 			di as error "Mata error code: " _rc
@@ -262,6 +267,8 @@ void parse_stderr_version_control(string scalar filename)
 	input_fh = fopen(filename, "r")
 	
 	while ((line=fget(input_fh)) != J(0,0,"")) {
+		if (strpos(strlower(line), "error: this r installation is")!=0) exit(error(1))
+		if (strpos(strlower(line), "error: the following packages are not installed")!=0) exit(error(2))
 		if (strpos(strlower(line), "error")!=0) exit(error(198))
 	}
 	

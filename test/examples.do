@@ -10,36 +10,6 @@ program drop _all
 local rscript_exe "$RSCRIPT_PATH"
 assert !mi("`rscript_exe'")
 
-
-
-cap rscript, rversion(3.6.0) require("tidyverse" "estimatr" "Test" "test2")
-assert _rc==9
-
-* rversion checks. Note, rscript, rversion(5.0 1.5) is allowable (but nonsensical) syntax
-rscript, rversion(3.6.0)
-
-cap rscript, rversion(1.5 1.5)
-assert _rc==9
-
-rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
-confirm file "`t1'"
-erase "`t1'"
-
-cap rscript using missing.R, args("arg1 with spaces" "`t1'")
-assert _rc==601
-
-cap rscript, args("arg1 with spaces" "`t1'")
-assert _rc==100
-
-cap rscript, rversion(3.6.0 3.2 1)
-assert _rc==198
-
-cap rscript, rversion(3.6..0)
-assert _rc==198
-
-cap rscript, rversion(-3.6.0)
-assert _rc==198
-
 ******************************
 * Run examples and verify output
 ******************************
@@ -100,6 +70,43 @@ assert _rc==601
 * Example_error.R has an error in the R code ("Error: object 'error_command' not found"), so rscript should return _rc==198
 di as error "example_error.R ended with an error" _n "See stderr output above for details" _n "invalid syntax"
 rcof noi rscript using example_error.R, args("arg1 with spaces" "`t1'")==198
+
+******************************
+* rversion() and require() examples 
+******************************
+* Note, `rscript, rversion(Y X)`, where Y>X is allowable syntax, but will always generate an error
+
+* Check that R >= 3.6, and that 3.6 <= R <= 19.2
+rscript, rversion(3.6.0)
+rscript, rversion(3.6.0 19.2)
+
+rcof noi rscript, rversion(1.5 1.5)
+assert _rc==9
+
+rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
+confirm file "`t1'"
+erase "`t1'"
+
+rcof noi rscript, rversion(3.6.0 3.2 1)
+assert _rc==198
+
+rcof noi rscript, rversion(3.6..0)
+assert _rc==198
+
+rcof noi rscript, rversion(-3.6.0)
+assert _rc==198
+
+***
+* Miscellaneous QC's
+***
+
+* No using specified
+rcof noi rscript, args("arg1 with spaces" "`t1'")
+assert _rc==100
+
+* Missing file specified
+rcof noi rscript using missing.R, args("arg1 with spaces" "`t1'")
+assert _rc==601
 
 
 ** EOF
