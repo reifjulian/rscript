@@ -9,16 +9,16 @@ program define rscript, rclass
 
 	version 13.0
 
-	tempfile shell out err
-	tempname shellfile
+	tempfile shell out err tmpfile_require
+	tempname shellfile tmpname_require
 
-	syntax [using/], [rpath(string) args(string asis) rversion(string) force]
+	syntax [using/], [rpath(string) args(string asis) rversion(string) require(string asis) force]
 	
 	************************************************
 	* Error checking
 	************************************************
 	* User must specify a filename, unless rversion() was specified
-	if mi("`rversion'") & mi("`using'") {
+	if mi(`"`rversion'`require'"') & mi("`using'") {
 		di as error "using required"
 		exit 100
 	}
@@ -110,6 +110,7 @@ program define rscript, rclass
 		if wordcount(`"`rversion'"')==1 local rversion `"`rversion' -1"'
 	}
 	
+	
 	************************************************
 	* Detect shell version
 	************************************************	
@@ -121,26 +122,42 @@ program define rscript, rclass
 	shell echo "$0" > `shell'
 	file open `shellfile' using `"`shell'"', read
 	file read `shellfile' shellline
-	file close `shellfile'		
+	file close `shellfile'
 
 	************************************************
-	* Version control. Redirect stdout to `out' and stderr to `err'
+	* Version control: rversion() and/or require() options. Redirect stdout to `out' and stderr to `err'
 	************************************************
-	if !mi(`"`rversion'"') {
+	if !mi(`"`rversion'`require'"') {
 		
 		local rversion_script "$GITHUB/rscript/src/_rversion.R"
 		
+		if mi(`"`rversion'"') local rversion "-1 -1"
+		
+		if !mi(`"`require'"') {
+			
+			qui file open `tmpname_require' using `"`tmpfile_require'"', write text replace
+			
+			tokenize `"`require'"'
+			while !mi(`"`1'"') {
+				file write `tmpname_require' `"`1'"' _n	
+				macro shift
+			}
+			qui file close `tmpname_require'
+			
+			local arg_require "`tmpfile_require'"
+		}
+		
 		* shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
-			shell ("`rpath'" "`rversion_script'" `rversion' > `out') >& `err'
+			shell ("`rpath'" "`rversion_script'" `rversion' `arg_require' > `out') >& `err'
 		}
 
 		else if strpos("`shellline'", "bash") {
-			shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
+			shell "`rpath'" "`rversion_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 
 		else {
-			shell "`rpath'" "`rversion_script'" `rversion' > `out' 2>`err'
+			shell "`rpath'" "`rversion_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 		
 		* Report output from version control call

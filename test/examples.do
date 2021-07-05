@@ -10,6 +10,10 @@ program drop _all
 local rscript_exe "$RSCRIPT_PATH"
 assert !mi("`rscript_exe'")
 
+
+cap rscript, rversion(3.6.0) require("tidyverse" "estimatr" "Test" "test2")
+assert _rc==9
+
 * rversion checks. Note, rscript, rversion(5.0 1.5) is allowable (but nonsensical) syntax
 rscript, rversion(3.6.0)
 

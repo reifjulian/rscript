@@ -31,9 +31,11 @@ rcurrent <- packageVersion("base")
 print(paste("R installation is version", rcurrent))
 
 # Minimum version requirements
-if (rcurrent < rmin) {
-  vers_ex_msg = paste0("This R installation is older than version ", rmin)
-  stop(vers_ex_msg)
+if (rmin != '-1') {
+  if (rcurrent < rmin) {
+    vers_ex_msg = paste0("This R installation is older than version ", rmin)
+    stop(vers_ex_msg)
+  }
 }
 
 # Maximum version requirements (optional)
@@ -44,6 +46,18 @@ if (rmax != '-1') {
   }
 }
 
+
+# Check that the following packages have been installed
+if(length(args)==3) {
+
+  packages <-  as.character(read.csv(args[3],header = FALSE)$V1)
+  installed <- packages %in% installed.packages()[, "Package"]
+
+  if(any(!installed)) {
+    vers_ex_msg = paste0("The following packages are not installed:\n  ", paste(packages[indx],collapse="\n  "))
+    stop(vers_ex_msg)
+  }
+}
 ##EOF
 
 
