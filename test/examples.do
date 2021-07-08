@@ -34,8 +34,7 @@ rscript using example_1.R, rpath("`rscript_exe'") args("arg1 with spaces" "`t1'"
 confirm file "`t1'"
 erase "`t1'"
 
-* (c) using default path (should be noted in text output)
-di "Using default path: "
+* (c) "Using default path" (should be noted in text output)
 rscript using example_1.R, args("arg1 with spaces" "`t1'")
 confirm file "`t1'"
 erase "`t1'"
@@ -64,7 +63,6 @@ if "`c(os)'"!="Windows" {
 ******************************
 
 * Specifying wrong file path
-di as error "R executable not found. Specify R executable using option rpath() or using the global RSCRIPT_PATH"
 rcof noi rscript using example_1.R, args("Hello World!" "`t2'") rpath("xxx:/xxx")==601
 assert _rc==601
 

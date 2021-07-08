@@ -1,4 +1,4 @@
-*! rscript 1.0.5 5jul2021 by David Molitor and Julian Reif
+*! rscript 1.0.5 8jul2021 by David Molitor and Julian Reif
 * 1.0.5: added rversion() option. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -9,7 +9,7 @@ program define rscript, rclass
 
 	version 13.0
 
-	tempfile shell out err tmpfile_require
+	tempfile shell out err tmpfile_require rversion_control_script
 	tempname shellfile tmpname_require
 
 	syntax [using/], [rpath(string) args(string asis) rversion(string) require(string asis) force]
@@ -120,8 +120,7 @@ program define rscript, rclass
 				exit 198
 			}			
 			macro shift
-		}		
-
+		}
 	}
 	
 	
@@ -133,7 +132,7 @@ program define rscript, rclass
 	*	Unix tcsh: /usr/local/bin/tcsh (default on NBER server)
 	*	Unix bash: /bin/bash
 	*	Windows
-	shell echo "$0" > `shell'
+	qui shell echo "$0" > `shell'
 	file open `shellfile' using `"`shell'"', read
 	file read `shellfile' shellline
 	file close `shellfile'
@@ -143,10 +142,10 @@ program define rscript, rclass
 	************************************************
 	if !mi(`"`rversion'`require'"') {
 		
-		local rversion_script "$GITHUB/rscript/src/_rversion.R"
-		
+		* If rversion() not specified, set to default values of -1
 		if mi(`"`rversion'"') local rversion "-1 -1"
 		
+		* If require() specified, write out list of packages to file
 		if !mi(`"`require'"') {
 			
 			qui file open `tmpname_require' using `"`tmpfile_require'"', write text replace
@@ -161,23 +160,25 @@ program define rscript, rclass
 			local arg_require "`tmpfile_require'"
 		}
 		
-		* shell call differs for csh/bash/other (windows is "other")
+		* Create an R script that will be used to check R version and/or installed packages
+		qui write_r_script `rversion_control_script'
+		
+		* Call that R script. Note: shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
-			shell ("`rpath'" "`rversion_script'" `rversion' `arg_require' > `out') >& `err'
+			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
 		}
 
 		else if strpos("`shellline'", "bash") {
-			shell "`rpath'" "`rversion_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 
 		else {
-			shell "`rpath'" "`rversion_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 		
-		* Report output from version control call
+		* Report output from version control script call
 		di as result "Version information:"
 		type `"`out'"'
-		di as result ""
 		type `"`err'"'
 		
 		cap mata: parse_stderr_version_control("`err'")
@@ -198,13 +199,12 @@ program define rscript, rclass
 	}
 	
 	************************************************
-	* Run the script. Redirect stdout to `out' and stderr to `err'
+	* Run the script specified by user. Redirect stdout to `out' and stderr to `err'
 	************************************************
 	if !mi("`using'") {
 		
 		di as result `"Running R script: `using'"'
 		if !mi(`"`args'"') di as result `"Args: `args'"'	
-		di as result _n
 		
 		* shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
@@ -234,7 +234,7 @@ program define rscript, rclass
 		type `"`err'"'
 		
 		di as result "`="_"*80'"
-		di as result "...end R output"_n
+		di as result "...end R output"
 		
 		
 		************************************************
@@ -242,27 +242,26 @@ program define rscript, rclass
 		************************************************
 		cap mata: parse_stderr("`err'")
 		if _rc==198 {
-			display as error "`using' ended with an error"
+			display as error _n "`using' ended with an error"
 			display as error "See stderr output above for details"
 			if "`force'"=="" error 198
 		}
 		else if _rc {
-			display as error "Encountered a problem while parsing stderr"
+			display as error _n "Encountered a problem while parsing stderr"
 			display as error "Mata error code: " _rc
 		}
 		
 		* In a few (rare) cases, a "fatal error" message will be written to stdout rather than stderr
 		cap mata: parse_stdout("`out'")
 		if _rc==198 {
-			display as error "`using' ended with a fatal error"
+			display as error _n "`using' ended with a fatal error"
 			display as error "See stdout output above for details"
 			if "`force'"=="" error 198
 		}
 		else if _rc {
-			display as error "Encountered a problem while parsing stdout"
+			display as error _n "Encountered a problem while parsing stdout"
 			display as error "Mata error code: " _rc
 		}
-	
 	}
 end
 
@@ -270,8 +269,77 @@ end
 * AUXILIARY FUNCTIONS
 ********************************
 
-* Parse the stderr and stdout output files to check for errors
-* Employ separate function for parsing the version control script created by rversion() and require() options
+***
+* write_script writes out an R script that checks the version of base R and confirms package installations 
+***
+
+* The program write_script expects one argument: the name of the file being written
+
+* The R script that is written accepts three arguments:
+*  (1) rmin (default, '-1', causes script to ignore enforcmement of minimum version)
+*  (2) rmax (default, '-1', causes script to ignore enforcmement of maximum version)
+*  (3) filename containing list of package names (optional)
+
+program define write_r_script
+
+	tempname filebf
+
+	***
+	* Write file to the first argument passed to write_script
+	***
+	qui file open `filebf' using "`1'", write text replace
+	
+	***
+	* R script contents
+	***
+			
+	* Parse arguments. Third argument (list of package names) is optional and referenced later on
+	file write `filebf' `"args = commandArgs(trailingOnly = "TRUE")"' _n
+	file write `filebf' `"rmin <- args[1]"' _n
+	file write `filebf' `"rmax <- args[2]"' _n _n
+	
+	* Report curent version
+	file write `filebf' `"rcurrent <- packageVersion("base")"' _n
+	file write `filebf' `"print(paste("R installation is version", rcurrent))"' _n _n
+	
+	* Enforce minimum version requirements (if specified)
+	file write `filebf' `"if (rmin != '-1') {"' _n
+	file write `filebf' `"  if (rcurrent < rmin) {"' _n
+	file write `filebf' `"    vers_ex_msg = paste0("This R installation is older than version ", rmin)"' _n
+	file write `filebf' `"    stop(vers_ex_msg)"' _n
+	file write `filebf' `"  }"' _n
+	file write `filebf' `"}"' _n _n
+	
+	* Enforce maximum version requirements (if specified)
+	file write `filebf' `"if (rmax != '-1') {"' _n
+	file write `filebf' `"  if (rcurrent > rmax ) {"' _n
+	file write `filebf' `"    vers_ex_msg = paste0("This R installation is newer than version ", rmax)"' _n
+	file write `filebf' `"    stop(vers_ex_msg)"' _n
+	file write `filebf' `"  }"' _n
+	file write `filebf' `"}"' _n _n
+
+	* If arg[3] (filename) was specified, read the file and check whether those packages were installed
+	file write `filebf' `"if(length(args)==3) {"' _n
+	file write `filebf' `"  packages <-  as.character(read.csv(args[3],header = FALSE)\$V1)"' _n
+	file write `filebf' `"  installed <- packages %in% installed.packages()[, "Package"]"' _n
+	file write `filebf' `"  if(any(!installed)) {"' _n
+	file write `filebf' `"    vers_ex_msg = paste0("The following packages are not installed:\n  ", paste(packages[!installed],collapse="\n  "))"' _n
+	file write `filebf' `"    stop(vers_ex_msg)"' _n
+	file write `filebf' `"  }"' _n
+	file write `filebf' `"}"' _n
+	
+	***
+	* File close
+	***	
+	qui file close `filebf'
+
+end
+
+*********
+* Mata functions used to parse the stderr and stdout output files to check for errors
+*********
+
+// Parser for the stderr file created by rversion() and require() options
 mata:
 void parse_stderr_version_control(string scalar filename)
 {
@@ -289,6 +357,7 @@ void parse_stderr_version_control(string scalar filename)
 	fclose(input_fh)
 }
 
+// Parsers for the stderr and stdout files created when running the R script specified by the user
 void parse_stderr(string scalar filename)
 {
 	real scalar input_fh
