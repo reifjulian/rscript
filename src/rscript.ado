@@ -209,7 +209,8 @@ program define rscript, rclass
 		else if _rc {
 			di as error "Encountered a problem while parsing stderr"
 			di as error "Mata error code: " _rc
-		}		
+		}
+		if !mi("`using'") di ""
 	}
 	
 	************************************************
