@@ -77,10 +77,21 @@ rcof noi rscript using example_error.R, args("arg1 with spaces" "`t1'")==198
 
 * Check that R >= 3.6, and that 3.6 <= R <= 19.2
 rscript, rversion(3.6.0)
+rscript, rversion("3.6.0   ")
+rscript, rversion("  3.6.0   " "")
 rscript, rversion(3.6.0 19.2)
 
 rcof noi rscript, rversion(1.5 1.5)
 assert _rc==9
+
+rcof noi rscript, rversion(9)
+assert _rc==9
+
+rcof noi rscript, rversion(9.)
+assert _rc==198
+
+rcof noi rscript, rversion("9.    ")
+assert _rc==198
 
 rscript using example_1.R, args("arg1 with spaces" "`t1'") rversion(3.6)
 confirm file "`t1'"

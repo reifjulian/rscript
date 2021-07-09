@@ -1,4 +1,4 @@
-*! rscript 1.0.5 8jul2021 by David Molitor and Julian Reif
+*! rscript 1.0.5 9jul2021 by David Molitor and Julian Reif
 * 1.0.5: added rversion() option. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -81,7 +81,11 @@ program define rscript, rclass
 		confirm file "`using'"
 	}
 	
-	* Ensure valid version numbers were passed to version()
+	* Do basic QC to help ensure valid version numbers were specified in rversion():
+	*  (1) Check that no more than 2 version numbers were passed
+	*  (2) ".." is not allowable syntax in R
+	*  (3) R does not allow version numbers to end in "."
+	*  (4) some additional checks by regex
 	if !mi(`"`rversion'"') {
 		if wordcount(`"`rversion'"')>2 {
 			di as error "rversion() invalid -- too many elements"
@@ -95,11 +99,16 @@ program define rscript, rclass
 				exit 198
 			}
 			
+			if substr(trim(`"`1'"'),-1,1)=="." {
+				di as error `"rversion() invalid: `1' is invalid version number (cannot end in '.')"'
+				exit 198
+			}			
+			
 			* The following regex:
 			*   (1) allows trailing and leading spaces
-			*   (2) requires first and last elements to be a digit
-			*   (3) allows middle to have arbitrary number of digits and decimals
-			if !regexm(`"`1'"',"^[ ]*[0-9][.0-9]*[0-9] *$") {
+			*   (2) requires first char to be a digit (requirement by R when checking string version numbers)
+			*   (3) allows remainder to be an arbitrary number of digits and decimals
+			if !regexm(`"`1'"',"^[ ]*[0-9]+[.0-9]* *$") {
 				di as error `"rversion() invalid: `1' is invalid version number"'
 				exit 198					
 			}			
@@ -191,7 +200,12 @@ program define rscript, rclass
 			di as error "This R installation is missing packages specified in require()"
 			di as error _skip(2) `"Packages can usually be installed by typing install.packages("X") at the R prompt, where X is the name of the package"'
 			error 9
-		}		
+		}
+		else if _rc==198 {
+			display as error _n "Version and package requirement checks ended with an error in R"
+			display as error "See stderr output above for details"
+			if "`force'"=="" error 198
+		}			
 		else if _rc {
 			di as error "Encountered a problem while parsing stderr"
 			di as error "Mata error code: " _rc

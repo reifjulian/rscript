@@ -21,7 +21,7 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 ## Usage
 
-`rscript` works by calling the `Rscript` executable that comes with your R installation. You can specify the location of this executable using the  option `rpath(pathname)` or by defining the global macro `RSCRIPT_PATH`. The following code demonstrates both usages.
+`rscript` works by calling the Rscript executable that comes with your R installation. You can specify the location of this executable using the  option `rpath(pathname)` or by defining the global macro `RSCRIPT_PATH`. The following code demonstrates both usages.
 
 ```stata
 * Use the -rpath()- option to specify the path to the Rscript executable
@@ -38,7 +38,7 @@ For more details on `rscript` usage, see the Stata help file included in this pa
 
 ## Tutorial 
 
-This tutorial assumes you have [installed](#install) the `rscript` Stata package and have successfully installed R, which is freely available [online](https://www.r-project.org). You also need to install the following R packages: `tidyverse`, `haven`, and `estimatr`. Install these packages by opening R and executing the following three lines of code:
+This tutorial assumes you have [installed](#installation) the `rscript` Stata package and have successfully installed R version 3.6 or later, which is freely available [online](https://www.r-project.org). You also need to install the following R packages: `tidyverse`, `haven`, and `estimatr`. Install these packages by opening R and executing the following three lines of code:
 
 ```R
 install.packages('tidyverse', repos='http://cran.us.r-project.org')
@@ -49,6 +49,11 @@ install.packages('estimatr', repos='http://cran.us.r-project.org')
 We will write a Stata script that calls an R script, **ols_robust.R**, and feeds it two arguments: an input filename and an output filename. The R script will read the input file, estimate an OLS regression with robust standard errors, and write the results to the output file. Here is the code for **ols_robust.R**:
 
 ```R
+# Required libraries
+library('tidyverse')
+library('haven')
+library('estimatr')
+
 # Parse arguments (if present)
 args = commandArgs(trailingOnly = "TRUE")
 if (length(args)) {
@@ -96,7 +101,7 @@ We then save the dataset into a tempfile and call the R script that we wrote. We
 
 ![Running rscript](images/stata_rscript.png)
 
-`rscript` reports that we are calling **ols_robust.R** and feeding it two arguments, which correspond to the names of the two tempfiles. `rscript` also reports the output produced by R. We can see here that the point estimates and standard errors are the same as those that were computed by Stata. (Don't worry about the `tidyverse` conflicts that are also reported. These namespace conflicts are quite common in R.) 
+`rscript` reports that we are calling **ols_robust.R** and feeding it two arguments, which correspond to the names of the two tempfiles. `rscript` also displays the output produced by R. We can see here that the point estimates and standard errors are the same as those that were computed by Stata. (Don't worry about the `tidyverse` conflicts that are shown in the stderr output. These namespace conflicts are quite common in R.) 
 
 Finally, we read in the results that were outputted from R into Stata and display them. We again have confirmation that that the point estimates and standard errors are the same in both Stata and R. 
 
