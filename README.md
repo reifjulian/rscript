@@ -21,7 +21,7 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 ## Usage
 
-`rscript` works by calling the Rscript executable that comes with your R installation. You can specify the location of this executable using the  option `rpath(pathname)` or by defining the global macro `RSCRIPT_PATH`. The following code demonstrates both usages.
+`rscript` works by calling the Rscript executable that comes with your R installation. You can specify the location of this executable using the  option `rpath(pathname)` or by defining the global macro `RSCRIPT_PATH`. On Mac/Linux, the Rscript path is typically `/usr/local/bin/Rscript` or `/usr/bin/Rscript`. On Windows, the path for R version X.Y.Z is typically `C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe`. If you don't specify a path, `rscript` will try to find Rscript on its own by searching commonly used paths. Here are the three ways to call the R executable:
 
 ```stata
 * Use the -rpath()- option to specify the path to the Rscript executable
@@ -30,11 +30,14 @@ rscript using filename.R, rpath("C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe")
 * Use global macro RSCRIPT_PATH to specify the path to the Rscript executable
 global RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
 rscript using filename.R
+
+
+* Let -rscript- find the Rscript executable on its own
+global RSCRIPT_PATH ""
+rscript using filename.R
 ```
 
-On Mac/Linux, the Rscript path is typically `/usr/local/bin/Rscript` or `/usr/bin/Rscript`. On Windows, the path for R version X.Y.Z is typically `C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe`. If you don't specify a path, `rscript` will try to find Rscript on its own by searching commonly used paths.
-
-For more details on `rscript` usage, see the Stata help file included in this package.
+For more details on `rscript` syntax and options, see the Stata help file included with the package.
 
 ## Tutorial 
 
