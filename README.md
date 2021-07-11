@@ -31,7 +31,6 @@ rscript using filename.R, rpath("C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe")
 global RSCRIPT_PATH "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe"
 rscript using filename.R
 
-
 * Let -rscript- find the Rscript executable on its own
 global RSCRIPT_PATH ""
 rscript using filename.R
