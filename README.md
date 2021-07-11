@@ -125,7 +125,7 @@ Finally, we read in the results that were outputted from R into Stata and displa
 * **January 22, 2019**
   - Added `force` option
 
-## Authors:
+## Authors
 
 [David Molitor](http://www.davidmolitor.com)
 <br>University of Illinois
