@@ -77,7 +77,7 @@ write_csv(tidy(ols), arg2)
 
 ## EOF
 ```
-Here is the Stata script:
+Below is the Stata code that calls this R script. We specify options that instruct `rscript` to generate a break if the user's base R installation is less than 3.6 or if the user is missing the "tidyverse", "haven", or "estimatr" packages.
 
 ```stata
 * Stata: OLS with robust standard errors
@@ -100,7 +100,7 @@ The Stata script begins by running the OLS regression in Stata.
 
 ![Stata OLS output](images/stata_ols.png)
 
-We then save the dataset into a tempfile and call the R script that we wrote. We specify that the user's base R installation must be version 3.6 or higher, and that the user needs the "tidyverse", "haven", and "estimatr" packages in order to run the R script successfully.
+We then save the dataset into a tempfile and call the R script that we wrote.
 
 ![Running rscript](images/stata_rscript.png)
 
