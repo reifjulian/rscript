@@ -76,7 +76,7 @@ write_csv(tidy(ols), arg2)
 
 ## EOF
 ```
-Below is the Stata code that calls this R script. We specify options that instruct `rscript` to generate a break if the user's base R installation is less than 3.6 or if the user is missing the "tidyverse", "haven", or "estimatr" packages.
+Below is the Stata code that calls **ols_robust.R**. We use the `args()` option to feed it the two inputs it expects, and require the user's base R installation to be version 3.6 or higher by specifying the option `rversion(3.6)`:
 
 ```stata
 * Stata: OLS with robust standard errors
@@ -88,7 +88,7 @@ reg price mpg, robust
 * Note: we are requiring user to have R version 3.6 or later
 tempfile auto output
 save "`auto'", replace
-rscript using ols_robust.R, args("`auto'" "`output'") rversion(3.6) require(tidyverse haven estimatr)
+rscript using ols_robust.R, args("`auto'" "`output'") rversion(3.6)
 
 * Read in the R results
 insheet using "`output'", comma clear
