@@ -21,7 +21,9 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 ## Usage
 
-`rscript` works by calling the Rscript executable that comes with your R installation. You can specify the location of this executable using the  option `rpath(pathname)` or by defining the global macro `RSCRIPT_PATH`. On Mac/Linux, the Rscript path is typically `/usr/local/bin/Rscript` or `/usr/bin/Rscript`. On Windows, the path for R version X.Y.Z is typically `C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe`. If you don't specify a path, `rscript` will try to find Rscript on its own by searching commonly used paths. Here are the three ways to call the R executable:
+`rscript` works by calling the Rscript executable that comes with your R installation. You can specify the location of this executable using the  option `rpath(pathname)` or by defining the global macro `RSCRIPT_PATH`. On Mac/Linux, the Rscript path is typically `/usr/local/bin/Rscript` or `/usr/bin/Rscript`. On Windows, the path for R version X.Y.Z is typically `C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe`. If you don't specify a path, `rscript` will try to find the Rscript executable on its own by searching commonly used paths. 
+
+Here are the three different ways to call an R script:
 
 ```stata
 * Use the -rpath()- option to specify the path to the Rscript executable
@@ -99,7 +101,7 @@ The Stata script begins by running the OLS regression in Stata.
 
 ![Stata OLS output](images/stata_ols.png)
 
-We then save the dataset into a tempfile and call the R script that we wrote.
+We then save the dataset to a tempfile and call the R script that we wrote.
 
 ![Running rscript](images/stata_rscript.png)
 
