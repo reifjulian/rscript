@@ -48,9 +48,14 @@ If {cmd:rpath()} is not specified and RSCRIPT_PATH is undefined, then {cmd:rscri
 
 {title:Notes}
 
-{p 4 8 2}{cmd:rscript} has been tested on Windows, Mac OS X, and Unix (tcsh shell).
-For ease of use, we recommend defining the global RSCRIPT_PATH in your Stata {help profile:profile}.
+{p 4 8 2}
+{cmd:rscript} has been tested on Windows, Mac OS X, and Unix (tcsh shell).
 
+{p 4 8 2}
+The options {cmd:rversion()} and {cmd:require()} can be used without specifying {cmd:using} {it:filename.R}. 
+For example, to ensure that the R installation is version 3.6 or higher, type:
+
+{col 8}{cmd:. rscript, rversion(3.6)}
 
 {title:Stored results}
 
