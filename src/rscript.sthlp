@@ -40,7 +40,7 @@ If {cmd:rpath()} is not specified and RSCRIPT_PATH is undefined, then {cmd:rscri
 {cmd:rversion(}{it:# [#]}{cmd:)} instructs {cmd:script} to break if the R version is less than {it:#}. You can also optionally provide a second {it:#}, which generates a break if the R version is greater than {it:#}.
 
 {p 4 8 2}
-{cmd:require(}{it:stringlist}{cmd:)} specifies a list of required R packages and generates a break if any are missing.
+{cmd:require(}{it:stringlist}{cmd:)} specifies a list of required R packages and generates a break if any are missing from the user's default library.
 
 {p 4 8 2}
 {cmd:force} instructs {cmd:rscript} not to break when {it:filename.R} generates an error during execution.
