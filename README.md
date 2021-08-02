@@ -1,7 +1,7 @@
 # RSCRIPT: call an R script from Stata.
 
-- Current version: `1.0.5 8jul2021`
-- Jump to: [`overview`](#overview) [`installation`](#installation) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
+- Current version: `1.0.5 2aug2021`
+- Jump to: [`overview`](#overview) [`installation`](#installation) [`platforms`](#platforms) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
 
@@ -18,6 +18,10 @@ which rscript
 * Install the most recent version of -rscript-
 net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/master") replace
 ```
+
+## Platforms
+
+`rscript` is compatible with Stata for Windows, Mac, and Linux. However, `rscript` does not work in batch mode on Windows because [Stata for Windows ignores shell requests](https://www.statalist.org/forums/forum/general-stata-discussion/general/1365964-shell-commands-in-batch-mode).
 
 ## Usage
 
