@@ -21,7 +21,7 @@ net install rscript, from("https://raw.githubusercontent.com/reifjulian/rscript/
 
 ## Platforms
 
-`rscript` is compatible with Stata for Windows, Mac, and Linux. However, `rscript` does not work in batch mode on Windows because [Stata for Windows ignores shell requests](https://www.statalist.org/forums/forum/general-stata-discussion/general/1365964-shell-commands-in-batch-mode).
+`rscript` is compatible with Stata for Windows, Mac, and Linux when Stata is invoked in interactive mode (the usual case). In batch mode, `rscript` is compatible with Stata for Mac and Linux. `rscript` does not work in batch mode on Windows because [Stata for Windows ignores shell requests](https://www.statalist.org/forums/forum/general-stata-discussion/general/1365964-shell-commands-in-batch-mode).
 
 ## Usage
 
