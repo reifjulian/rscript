@@ -116,10 +116,11 @@ Finally, we read in the results that were outputted from R into Stata and displa
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
-* **July 8, 2021**
+* **August 2, 2021**
   - Added `rversion()` option
   - Added `require()` option
   - Edited output text for case when not using a default path (no effect on functionality)
+  - Calls to rscript in batch mode on Stata for Windows now break with an informative error message (no effect on functionality) 
 * **November 25, 2020**
   - `rscript` now searches for the R executable if `RSCRIPT_PATH` undefined and `rpath()` not specified
 * **March 23, 2020**
