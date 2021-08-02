@@ -17,6 +17,18 @@ program define rscript, rclass
 	************************************************
 	* Error checking
 	************************************************
+  
+  * rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests (as of Stata 17.0)
+  if "`c(os)'" == "Windows" {
+    tempfile wincheck
+    qui shell echo "ok" > `wincheck'
+    capture confirm file `wincheck'
+    if _rc > 0 {
+      di as error "rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests"
+      exit 1
+    }
+  }
+  
 	* User must specify a filename, unless rversion() was specified
 	if mi(`"`rversion'`require'"') & mi("`using'") {
 		di as error "using required"
