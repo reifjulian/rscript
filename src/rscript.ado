@@ -1,5 +1,5 @@
-*! rscript 1.0.5 9jul2021 by David Molitor and Julian Reif
-* 1.0.5: added rversion() option. fixed text output when using RSCRIPT_PATH
+*! rscript 1.1 3aug2021 by David Molitor and Julian Reif
+* 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
 * 1.0.2: stderr is now parsed by Mata instead of Stata
@@ -18,11 +18,11 @@ program define rscript, rclass
 	* Error checking
 	************************************************
   
-  * rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests (as of Stata 17.0)
-  if "`c(os)'" == "Windows" & "`c(mode)'" == "batch" {
-    di as error "rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests"
-    exit 1
-  }
+	* rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests (as of Stata 17.0)
+	if "`c(os)'" == "Windows" & "`c(mode)'" == "batch" {
+		di as error "rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests in this setting"
+		exit 1
+	}
   
 	* User must specify a filename, unless rversion() was specified
 	if mi(`"`rversion'`require'"') & mi("`using'") {
