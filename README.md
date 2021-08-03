@@ -116,7 +116,7 @@ Finally, we read in the results that were outputted from R into Stata and displa
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
-* **August 2, 2021**
+* **August 3, 2021**
   - Added `rversion()` option
   - Added `require()` option
   - Edited output text for case when not using a default path (no effect on functionality)
