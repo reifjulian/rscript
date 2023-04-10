@@ -1,4 +1,5 @@
-*! rscript 1.1 3aug2021 by David Molitor and Julian Reif
+*! rscript 1.1.1 10apr2023 by David Molitor and Julian Reif
+* 1.1.1  added async() option
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -12,7 +13,7 @@ program define rscript, rclass
 	tempfile shell out err tmpfile_require rversion_control_script
 	tempname shellfile tmpname_require
 
-	syntax [using/], [rpath(string) args(string asis) rversion(string) require(string asis) force]
+	syntax [using/], [rpath(string) args(string asis) rversion(string) require(string asis) async force]
 	
 	************************************************
 	* Error checking
@@ -139,6 +140,28 @@ program define rscript, rclass
 		}
 	}
 	
+	* If async option specified, rpath call will be run in the background
+	if !mi("`async'") {
+			
+		local os = lower("`c(os)'")
+		
+		* Unix/mac: "nohup" keeps command running even after logging out, and '&' makes it run in the background
+		if inlist("`os'","macosx","unix") {
+			local rpath "nohup `rpath'"
+			local rpath_end "&"
+		}
+		
+		* Windows: "start /B" to run in the background
+		else if "`os'" == "windows" {
+			local rpath "start /B `rpath'"
+		}
+		
+		else {
+			di as error "async option not supported for the `c(os)' operating system"
+			exit 198
+		}
+	}
+	
 	
 	************************************************
 	* Detect shell version
@@ -181,15 +204,15 @@ program define rscript, rclass
 		
 		* Call that R script. Note: shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
-			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
+			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err' `rpath_end'
 		}
 
 		else if strpos("`shellline'", "bash") {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err' `rpath_end'
 		}
 
 		else {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err' `rpath_end'
 		}
 		
 		* Report output from version control script call
@@ -242,6 +265,9 @@ program define rscript, rclass
 		}
 		
 		return local rpath `rpath'
+		
+		* If running aynchronously, exit without looking for stdout and stderr output
+		if !mi("`async'") exit
 		
 		************************************************
 		* Display stdout and stderr output

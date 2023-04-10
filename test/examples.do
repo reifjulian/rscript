@@ -2,7 +2,7 @@
 * Authors: David Molitor and Julian Reif
 adopath ++ "../src"
 set more off
-tempfile t t1 t2
+tempfile t t1 t2 t3
 version 13
 program drop _all
 
@@ -57,6 +57,12 @@ if "`c(os)'"!="Windows" {
 	confirm file "`t2'"
 	erase "`t2'"	
 }
+
+***
+* Test asynchronous option
+***
+rscript using example_1.R, args("arg1 with spaces" "`t3'") async
+confirm file "`t3'"
 
 ******************************
 * Generate intentional errors
