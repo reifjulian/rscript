@@ -156,7 +156,11 @@ program define rscript, rclass
 			local rpath_end "&"
 		}
 		
-		* Windows: "start /B" to run in the background, but it disappears with the shell prompt. Might be doable with powershell
+		* Windows: "start /B /min "" " to run in the background
+		else if "`os'" == "windows" {
+			local rpath_start `"start /B /MIN "" "'
+		}
+		
 		else {
 			di as error "async option not supported for the `c(os)' operating system"
 			exit 198
@@ -319,10 +323,10 @@ end
 ********************************
 
 ***
-* write_script writes out an R script that checks the version of base R and confirms package installations 
+* write_r_script writes out an R script that checks the version of base R and confirms package installations 
 ***
 
-* The program write_script expects one argument: the name of the file being written
+* The program write_r_script expects one argument: the name of the file being written
 
 * The R script that is written accepts three arguments:
 *  (1) rmin (default, '-1', causes script to ignore enforcmement of minimum version)
