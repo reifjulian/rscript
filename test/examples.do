@@ -60,8 +60,16 @@ if "`c(os)'"!="Windows" {
 
 ***
 * Test asynchronous option
+*  (1) confirm Stata does not wait for R script to finish
+*  (2) confirm R script does eventually finish (takes a few seconds)
 ***
-rscript using example_1.R, args("arg1 with spaces" "`t3'") async
+
+* This R script writes out a file, but with a few seconds lag
+rscript using example_async.R, args("arg1 with spaces" "`t3'") async
+cap confirm file "`t3'"
+assert _rc !=0
+
+sleep 10000
 confirm file "`t3'"
 
 ******************************

@@ -1,5 +1,5 @@
 *! rscript 1.1.1 10apr2023 by David Molitor and Julian Reif
-* 1.1.1  added async() option
+* 1.1.1  added async() option. edited parse_stderr to search for "error:" and "error " instead of "error"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -142,20 +142,21 @@ program define rscript, rclass
 	
 	* If async option specified, rpath call will be run in the background
 	if !mi("`async'") {
+		
+		if !mi(`"`rversion'"') {
+			di as error "Cannot specify async with rversion()"
+			exit 198
+		}
 			
 		local os = lower("`c(os)'")
 		
 		* Unix/mac: "nohup" keeps command running even after logging out, and '&' makes it run in the background
 		if inlist("`os'","macosx","unix") {
-			local rpath "nohup `rpath'"
+			local rpath_start "nohup "
 			local rpath_end "&"
 		}
 		
-		* Windows: "start /B" to run in the background
-		else if "`os'" == "windows" {
-			local rpath "start /B `rpath'"
-		}
-		
+		* Windows: "start /B" to run in the background, but it disappears with the shell prompt. Might be doable with powershell
 		else {
 			di as error "async option not supported for the `c(os)' operating system"
 			exit 198
@@ -204,15 +205,15 @@ program define rscript, rclass
 		
 		* Call that R script. Note: shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
-			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err' `rpath_end'
+			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
 		}
 
 		else if strpos("`shellline'", "bash") {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err' `rpath_end'
+			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 
 		else {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err' `rpath_end'
+			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 		
 		* Report output from version control script call
@@ -253,15 +254,15 @@ program define rscript, rclass
 		
 		* shell call differs for csh/bash/other (windows is "other")
 		if strpos("`shellline'", "csh") {	
-			shell ("`rpath'" "`using'" `args' > `out') >& `err'
+			shell (`rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
 		}
 		
 		else if strpos("`shellline'", "bash") {
-			shell "`rpath'" "`using'" `args' > `out' 2>`err'
+			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		else {
-			shell "`rpath'" "`using'" `args' > `out' 2>`err'
+			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		return local rpath `rpath'
@@ -414,7 +415,7 @@ void parse_stderr(string scalar filename)
 	input_fh = fopen(filename, "r")
 	
 	while ((line=fget(input_fh)) != J(0,0,"")) {
-		if (strpos(strlower(line), "error")!=0) exit(error(198))
+		if (strpos(strlower(line), "error:")!=0 | strpos(strlower(line), "error ")!=0) exit(error(198))
 	}
 	
 	fclose(input_fh)
