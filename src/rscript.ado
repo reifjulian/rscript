@@ -419,7 +419,7 @@ void parse_stderr(string scalar filename)
 	input_fh = fopen(filename, "r")
 	
 	while ((line=fget(input_fh)) != J(0,0,"")) {
-		if (strpos(strlower(line), "error:")!=0 | strpos(strlower(line), "error ")!=0) exit(error(198))
+		if (strpos(line, "Error: ")!=0) exit(error(198))
 	}
 	
 	fclose(input_fh)
