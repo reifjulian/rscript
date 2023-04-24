@@ -84,6 +84,14 @@ assert _rc==601
 di as error "example_error.R ended with an error" _n "See stderr output above for details" _n "invalid syntax"
 rcof noi rscript using example_error.R, args("arg1 with spaces" "`t1'")==198
 
+* A warning message that is sent to stderr and begins with the case-sensitive string "Error:" is flagged as an error
+rcof noi rscript using example_warning.R, args("Error:")==198
+
+* These warning messages are not flagged as errors
+rscript using example_warning.R, args(" Error:")
+rscript using example_warning.R, args("error:")
+rscript using example_warning.R, args("Error")
+
 ******************************
 * rversion() and require() examples 
 ******************************
