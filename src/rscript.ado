@@ -1,5 +1,5 @@
-*! rscript 1.1.1 10apr2023 by David Molitor and Julian Reif
-* 1.1.1  added async() option. edited parse_stderr to search for "error:" and "error " instead of "error"
+*! rscript 1.1.1 24apr2023 by David Molitor and Julian Reif
+* 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
 * 1.0.3: added support for "~" pathnames
@@ -419,7 +419,7 @@ void parse_stderr(string scalar filename)
 	input_fh = fopen(filename, "r")
 	
 	while ((line=fget(input_fh)) != J(0,0,"")) {
-		if (strpos(line, "Error: ")==1) exit(error(198))
+		if (strpos(line, "Error:")==1) exit(error(198))
 	}
 	
 	fclose(input_fh)
