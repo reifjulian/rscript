@@ -1,4 +1,4 @@
-*! rscript 1.1.1 24apr2023 by David Molitor and Julian Reif
+*! rscript 1.1.1 8may2023 by David Molitor and Julian Reif
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
@@ -156,9 +156,9 @@ program define rscript, rclass
 			local rpath_end "&"
 		}
 		
-		* Windows: "start /B /min "" " to run in the background
+		* Windows: "cmd.exe /c start /B /min "" " to run in the background (using winexec)
 		else if "`os'" == "windows" {
-			local rpath_start `"start /B /MIN "" "'
+			local rpath_start `"cmd.exe /c start /B /MIN "" "'
 		}
 		
 		else {
@@ -266,7 +266,10 @@ program define rscript, rclass
 		}
 		
 		else {
-			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			if !mi("`async'") {
+				winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			}
+			else shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		return local rpath `rpath'
