@@ -1,4 +1,4 @@
-*! rscript 1.1.1 8may2023 by David Molitor and Julian Reif
+*! rscript 1.1.1 16may2023 by David Molitor and Julian Reif
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
@@ -262,6 +262,10 @@ program define rscript, rclass
 		}
 		
 		else if strpos("`shellline'", "bash") {
+			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+		}
+		
+		else if inlist("`os'","macosx","unix") {
 			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
