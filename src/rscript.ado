@@ -207,15 +207,17 @@ program define rscript, rclass
 		* Create an R script that will be used to check R version and/or installed packages
 		qui write_r_script `rversion_control_script'
 		
-		* Call that R script. Note: shell call differs for csh/bash/other (windows is "other")
+		* csh shell call
 		if strpos("`shellline'", "csh") {	
 			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
 		}
-
+		
+		* bash shell call
 		else if strpos("`shellline'", "bash") {
 			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 
+		* windows and all other unix shell calls
 		else {
 			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
@@ -256,19 +258,22 @@ program define rscript, rclass
 		di as result `"Running R script: `using'"'
 		if !mi(`"`args'"') di as result `"Args: `args'"'	
 		
-		* shell call differs for csh/bash/other (windows is "other")
+		* csh shell call
 		if strpos("`shellline'", "csh") {	
 			shell (`rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
 		}
 		
+		* bash shell call
 		else if strpos("`shellline'", "bash") {
 			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
+		* all other unix shell calls
 		else if inlist("`os'","macosx","unix") {
 			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
+		* windows shell call
 		else {
 			if !mi("`async'") {
 				winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
