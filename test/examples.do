@@ -2,7 +2,7 @@
 * Authors: David Molitor and Julian Reif
 adopath ++ "../src"
 set more off
-tempfile t t1 t2
+tempfile t t1 t2 t3
 version 13
 program drop _all
 
@@ -58,6 +58,20 @@ if "`c(os)'"!="Windows" {
 	erase "`t2'"	
 }
 
+***
+* Test asynchronous option
+*  (1) confirm Stata does not wait for R script to finish
+*  (2) confirm R script does eventually finish (takes a few seconds)
+***
+
+* This R script writes out a file, but with a few seconds lag
+rscript using example_async.R, args("arg1 with spaces" "`t3'") async
+cap confirm file "`t3'"
+assert _rc !=0
+
+sleep 10000
+confirm file "`t3'"
+
 ******************************
 * Generate intentional errors
 ******************************
@@ -69,6 +83,14 @@ assert _rc==601
 * Example_error.R has an error in the R code ("Error: object 'error_command' not found"), so rscript should return _rc==198
 di as error "example_error.R ended with an error" _n "See stderr output above for details" _n "invalid syntax"
 rcof noi rscript using example_error.R, args("arg1 with spaces" "`t1'")==198
+
+* A warning message that is sent to stderr and begins with the case-sensitive string "Error:" is flagged as an error
+rcof noi rscript using example_warning.R, args("Error:")==198
+
+* These warning messages are not flagged as errors
+rscript using example_warning.R, args(" Error:")
+rscript using example_warning.R, args("error:")
+rscript using example_warning.R, args("Error")
 
 ******************************
 * rversion() and require() examples 
