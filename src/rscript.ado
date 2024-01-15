@@ -1,4 +1,5 @@
-*! rscript 1.1.1 16may2023 by David Molitor and Julian Reif
+*! rscript 1.1.2 15jan2023 by David Molitor and Julian Reif
+* 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
@@ -158,7 +159,8 @@ program define rscript, rclass
 		
 		* Windows: "cmd.exe /c start /B /min "" " to run in the background (using winexec)
 		else if "`os'" == "windows" {
-			local rpath_start `"cmd.exe /c start /B /MIN "" "'
+			*local rpath_start `"cmd.exe /c start /B /MIN "" "'
+			local rpath_start `"cmd.exe /c set "LANGUAGE=en" & start /B /MIN "" "'
 		}
 		
 		else {
@@ -209,17 +211,17 @@ program define rscript, rclass
 		
 		* csh shell call
 		if strpos("`shellline'", "csh") {	
-			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
+			qui shell ("LANGUAGE=en" "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
 		}
 		
 		* bash shell call
 		else if strpos("`shellline'", "bash") {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell "LANGUAGE=en" "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 
 		* windows and all other unix shell calls
 		else {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell set "LANGUAGE=en" & "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 		
 		* Report output from version control script call
@@ -260,17 +262,17 @@ program define rscript, rclass
 		
 		* csh shell call
 		if strpos("`shellline'", "csh") {	
-			shell (`rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
+			shell ("LANGUAGE=en" `rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
 		}
 		
 		* bash shell call
 		else if strpos("`shellline'", "bash") {
-			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			shell "LANGUAGE=en" `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		* all other unix shell calls
 		else if inlist("`os'","macosx","unix") {
-			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			shell "LANGUAGE=en" `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		* windows shell call
@@ -278,7 +280,7 @@ program define rscript, rclass
 			if !mi("`async'") {
 				winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 			}
-			else shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			else shell set "LANGUAGE=en" & `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		return local rpath `rpath'
