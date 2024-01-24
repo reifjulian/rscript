@@ -1,4 +1,4 @@
-*! rscript 1.1.2 15jan2023 by David Molitor and Julian Reif
+*! rscript 1.1.2 24jan2024 by David Molitor and Julian Reif
 * 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
@@ -159,8 +159,7 @@ program define rscript, rclass
 		
 		* Windows: "cmd.exe /c start /B /min "" " to run in the background (using winexec)
 		else if "`os'" == "windows" {
-			*local rpath_start `"cmd.exe /c start /B /MIN "" "'
-			local rpath_start `"cmd.exe /c set "LANGUAGE=en" & start /B /MIN "" "'
+			local rpath_start `"cmd.exe /c start /B /MIN "" "'
 		}
 		
 		else {
