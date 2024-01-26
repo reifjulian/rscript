@@ -1,4 +1,4 @@
-*! rscript 1.1.2 24jan2024 by David Molitor and Julian Reif
+*! rscript 1.1.2 26jan2024 by David Molitor and Julian Reif
 * 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
@@ -210,7 +210,7 @@ program define rscript, rclass
 		
 		* csh shell call
 		if strpos("`shellline'", "csh") {	
-			qui shell ("LANGUAGE=en" "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
+			qui shell (setenv LANGUAGE en; "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
 		}
 		
 		* bash shell call
@@ -261,7 +261,7 @@ program define rscript, rclass
 		
 		* csh shell call
 		if strpos("`shellline'", "csh") {	
-			shell ("LANGUAGE=en" `rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
+			shell (setenv LANGUAGE en; `rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
 		}
 		
 		* bash shell call
