@@ -1,4 +1,5 @@
-*! rscript 1.1.1 16may2023 by David Molitor and Julian Reif
+*! rscript 1.1.2 4feb2024 by David Molitor and Julian Reif
+* 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
@@ -88,7 +89,7 @@ program define rscript, rclass
 		cd "`workdir_orig'"
 		confirm file "`using'"
 	}
-	
+
 	* Do basic QC to help ensure valid version numbers were specified in rversion():
 	*  (1) Check that no more than 2 version numbers were passed
 	*  (2) ".." is not allowable syntax in R
@@ -188,7 +189,7 @@ program define rscript, rclass
 		
 		* If rversion() not specified, set to default values of -1
 		if mi(`"`rversion'"') local rversion "-1 -1"
-		
+
 		* If require() specified, write out list of packages to file
 		if !mi(`"`require'"') {
 			
@@ -206,22 +207,27 @@ program define rscript, rclass
 		
 		* Create an R script that will be used to check R version and/or installed packages
 		qui write_r_script `rversion_control_script'
-		
+
 		* csh shell call
 		if strpos("`shellline'", "csh") {	
-			qui shell ("`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
+			qui shell (setenv LANGUAGE en; "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
 		}
-		
+	
 		* bash shell call
 		else if strpos("`shellline'", "bash") {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
-		}
-
-		* windows and all other unix shell calls
-		else {
-			qui shell "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+			qui shell LANGUAGE=en "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
 		
+		* all other unix shell calls (use same syntax as bash)
+		else if inlist("`os'","macosx","unix") {
+			qui shell LANGUAGE=en "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+		}
+
+		* windows shell call
+		else {
+			qui shell set "LANGUAGE=en" & "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
+		}
+
 		* Report output from version control script call
 		di as result "Version information:"
 		type `"`out'"'
@@ -260,17 +266,17 @@ program define rscript, rclass
 		
 		* csh shell call
 		if strpos("`shellline'", "csh") {	
-			shell (`rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
+			shell (setenv LANGUAGE en; `rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
 		}
 		
 		* bash shell call
 		else if strpos("`shellline'", "bash") {
-			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			shell LANGUAGE=en `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
-		* all other unix shell calls
+		* all other unix shell calls (use same syntax as bash)
 		else if inlist("`os'","macosx","unix") {
-			shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			shell LANGUAGE=en `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		* windows shell call
@@ -278,7 +284,7 @@ program define rscript, rclass
 			if !mi("`async'") {
 				winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 			}
-			else shell `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+			else shell set "LANGUAGE=en" & `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}
 		
 		return local rpath `rpath'
