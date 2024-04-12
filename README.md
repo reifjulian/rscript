@@ -1,6 +1,6 @@
 # RSCRIPT: call an R script from Stata.
 
-- Current version: `1.1.1 16may2023`
+- Current version: `1.1.2 4feb2024`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`platforms`](#platforms) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
@@ -116,6 +116,8 @@ Finally, we read in the results that were outputted from R into Stata and displa
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **February 4, 2024**
+  - `rscript` now breaks after errors when running R scripts on non-English R installations
 * **May 16, 2023**
   - Added `async` option
   - `rscript` now breaks only when first word of stderr is "Error:"
