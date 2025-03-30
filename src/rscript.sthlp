@@ -105,5 +105,5 @@ For example, to ensure that the R installation is version 3.6 or higher, type:
 
 {title:Also see}
 
-{p 4 4 2}{help rsource:rsource} (if installed), {help rcall:rcall} (if installed)
+{p 4 4 2}{help dobatch:dobatch} (if installed), {help rsource:rsource} (if installed), {help rcall:rcall} (if installed)
 

@@ -1,6 +1,6 @@
 # RSCRIPT: call an R script from Stata.
 
-- Current version: `1.1.2 4feb2024`
+- Current version: `1.2 30mar2025`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`platforms`](#platforms) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
@@ -116,6 +116,8 @@ Finally, we read in the results that were outputted from R into Stata and displa
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **March 30, 2025**
+  - On Unix-based systems, `rscript` now returns the process ID when the `async` option is specified. 
 * **February 4, 2024**
   - `rscript` now breaks after errors when running R scripts on non-English R installations
 * **May 16, 2023**

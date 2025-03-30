@@ -62,6 +62,7 @@ if "`c(os)'"!="Windows" {
 * Test asynchronous option
 *  (1) confirm Stata does not wait for R script to finish
 *  (2) confirm R script does eventually finish (takes a few seconds)
+*  (3) on unix, confirm that we have a PID
 ***
 
 * This R script writes out a file, but with a few seconds lag
@@ -71,6 +72,11 @@ assert _rc !=0
 
 sleep 10000
 confirm file "`t3'"
+if "`c(os)'"!="Windows" confirm integer number `r(PID)'
+if "`c(os)'"!="Windows" confirm integer number $RSCRIPT_PID
+
+rscript using example_async.R, args("arg1 with spaces" "`t3'") async
+if "`c(os)'"!="Windows" numlist "$RSCRIPT_PID", min(2) integer
 
 ******************************
 * Generate intentional errors
