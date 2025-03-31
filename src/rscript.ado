@@ -246,7 +246,8 @@ program define rscript, rclass
 				cap confirm number `stata_pid'
 				if _rc local stata_pid = .
 				return scalar PID = `stata_pid'
-				if !mi(`stata_pid') global RSCRIPT_PID "$RSCRIPT_PID `stata_pid'"				
+				if !mi(`stata_pid') global RSCRIPT_PID "$RSCRIPT_PID `stata_pid'"
+				global RSCRIPT_PID = trim("$RSCRIPT_PID")
 			}
 		}
 		else {
