@@ -116,6 +116,9 @@ Finally, we read in the results that were outputted from R into Stata and displa
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **March 30, 2025**
+  - Consolidated shell calls
+  - For Unix-based systems, `rscript` now stores the PID in `r()`
 * **February 4, 2024**
   - `rscript` now breaks after errors when running R scripts on non-English R installations
 * **May 16, 2023**
