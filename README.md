@@ -117,7 +117,8 @@ Finally, we read in the results that were outputted from R into Stata and displa
 
 ## Update History
 * **March 30, 2025**
-  - On Unix-based systems, `rscript` now returns the process ID when the `async` option is specified. 
+  - Consolidated shell calls
+  - On Unix-based systems, `rscript` now stores the process identifier in `r()` when the `async` option is specified. 
 * **February 4, 2024**
   - `rscript` now breaks after errors when running R scripts on non-English R installations
 * **May 16, 2023**
