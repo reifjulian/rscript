@@ -53,10 +53,12 @@ It will not wait for the script to finish and will not display any R output or e
 {title:Notes}
 
 {p 4 8 2}
-{cmd:rscript} has been tested on Windows, Mac OS X, and Unix (tcsh shell).
+{cmd:rscript} has been tested on Windows, macOS, and Unix (bash and tcsh shells).
 
 {p 4 8 2}
 The {cmd:async} option can be used to launch a large number of jobs at the same time, all running in parallel.
+{cmd:rscript} stores process IDs in {cmd:r(PID)} and in the global macro {it:RSCRIPT_PID}.
+Use {help dobatch_wait:dobatch_wait} (if installed), part of the {help dobatch:dobatch} package, to pause Stata until these jobs have terminated.
 
 {p 4 8 2}
 The options {cmd:rversion()} and {cmd:require()} can be used without specifying {cmd:using} {it:filename.R}. 
@@ -70,7 +72,13 @@ For example, to ensure that the R installation is version 3.6 or higher, type:
 
 {p 4 4 2}Macros
 
-{p 8 8 2}{cmd:r(path)}     {space 5} location of the R executable
+{p 8 8 2}{cmd:r(path)} {space 5} location of the R executable
+
+{p 4 4 2}Scalars
+
+{p 8 8 2}{cmd:r(PID)}  {space 6} process identifier (PID) assigned by the operating system to the newly launched R script (requires {cmd:async} option)
+
+{p 4 4 2}{cmd: rscript} also stores a running list of PIDs in the global macro {it:RSCRIPT_PID} (requires {cmd:async} option).
 
 
 {title:Examples}
@@ -105,5 +113,5 @@ For example, to ensure that the R installation is version 3.6 or higher, type:
 
 {title:Also see}
 
-{p 4 4 2}{help rsource:rsource} (if installed), {help rcall:rcall} (if installed)
+{p 4 4 2}{help dobatch:dobatch} (if installed), {help rsource:rsource} (if installed), {help rcall:rcall} (if installed)
 

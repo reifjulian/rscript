@@ -1,5 +1,6 @@
-*! rscript 1.1.2 4feb2024 by David Molitor and Julian Reif
-* 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations
+*! rscript 1.2 30mar2025 by David Molitor and Julian Reif
+* 1.2    consolidated shell calls. For unix-based systems, return the PID.
+* 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations.
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
 * 1.1:   added rversion() and require() options. fixed text output when using RSCRIPT_PATH
 * 1.0.4: added default pathname
@@ -11,8 +12,8 @@ program define rscript, rclass
 
 	version 13.0
 
-	tempfile shell out err tmpfile_require rversion_control_script
-	tempname shellfile tmpname_require
+	tempfile shell out err tmpfile_require rversion_control_script stata_pid_file
+	tempname shellfile tmpname_require stata_pid_fh
 
 	syntax [using/], [rpath(string) args(string asis) rversion(string) require(string asis) async force]
 	
@@ -20,8 +21,10 @@ program define rscript, rclass
 	* Error checking
 	************************************************
   
+	local os = lower("`c(os)'")
+  
 	* rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests (as of Stata 17.0)
-	if "`c(os)'" == "Windows" & "`c(mode)'" == "batch" {
+	if "`os'" == "windows" & "`c(mode)'" == "batch" {
 		di as error "rscript does not work in batch mode on Stata for Windows because Stata ignores shell requests in this setting"
 		exit 1
 	}
@@ -39,8 +42,6 @@ program define rscript, rclass
 		local rpath `"$RSCRIPT_PATH"'
 		
 		if mi(`"`rpath'"') {
-			
-			local os = lower("`c(os)'")
 			
 			* Unix/mac default paths: (1) /usr/local/bin/Rscript (2) /usr/bin/Rscript
 			if inlist("`os'","macosx","unix") {
@@ -148,13 +149,11 @@ program define rscript, rclass
 			di as error "Cannot specify async with rversion()"
 			exit 198
 		}
-			
-		local os = lower("`c(os)'")
 		
-		* Unix/mac: "nohup" keeps command running even after logging out, and '&' makes it run in the background
+		* Unix/mac: "nohup" keeps command running even after logging out; '&' makes it run in the background; "echo $!" returns the PID
 		if inlist("`os'","macosx","unix") {
 			local rpath_start "nohup "
-			local rpath_end "&"
+			local rpath_end "& echo $! > `stata_pid_file'"
 		}
 		
 		* Windows: "cmd.exe /c start /B /min "" " to run in the background (using winexec)
@@ -167,20 +166,6 @@ program define rscript, rclass
 			exit 198
 		}
 	}
-	
-	
-	************************************************
-	* Detect shell version
-	************************************************	
-	* Syntax for the -shell- call depends on which version of the shell is running:
-	*	Unix csh:  /bin/csh
-	*	Unix tcsh: /usr/local/bin/tcsh (default on NBER server)
-	*	Unix bash: /bin/bash
-	*	Windows
-	qui shell echo "$0" > `shell'
-	file open `shellfile' using `"`shell'"', read
-	file read `shellfile' shellline
-	file close `shellfile'
 
 	************************************************
 	* Version control: rversion() and/or require() options. Redirect stdout to `out' and stderr to `err'
@@ -208,22 +193,9 @@ program define rscript, rclass
 		* Create an R script that will be used to check R version and/or installed packages
 		qui write_r_script `rversion_control_script'
 
-		* csh shell call
-		if strpos("`shellline'", "csh") {	
-			qui shell (setenv LANGUAGE en; "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out') >& `err'
+		if inlist("`os'","macosx","unix") {
+			shell sh -c 'LANG=C "`rpath'" "`rversion_control_script'" `rversion' `arg_require' </dev/null >`out' 2>`err''
 		}
-	
-		* bash shell call
-		else if strpos("`shellline'", "bash") {
-			qui shell LANGUAGE=en "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
-		}
-		
-		* all other unix shell calls (use same syntax as bash)
-		else if inlist("`os'","macosx","unix") {
-			qui shell LANGUAGE=en "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
-		}
-
-		* windows shell call
 		else {
 			qui shell set "LANGUAGE=en" & "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
 		}
@@ -257,29 +229,27 @@ program define rscript, rclass
 	}
 	
 	************************************************
-	* Run the script specified by user. Redirect stdout to `out' and stderr to `err'
+	* Run the script specified by user. Redirect stdout to `out' and stderr to `err'. If run asynchronously on unix, store the PID.
 	************************************************
 	if !mi("`using'") {
 		
 		di as result `"Running R script: `using'"'
 		if !mi(`"`args'"') di as result `"Args: `args'"'	
-		
-		* csh shell call
-		if strpos("`shellline'", "csh") {	
-			shell (setenv LANGUAGE en; `rpath_start'"`rpath'" "`using'" `args' > `out') >& `err' `rpath_end'
+
+		if inlist("`os'","macosx","unix") {
+			shell sh -c 'LANG=C `rpath_start' "`rpath'" "`using'" `args' </dev/null >`out' 2>`err' `rpath_end''
+			if !mi("`async'") {
+				file open `stata_pid_fh' using `"`stata_pid_file'"', read
+				file read `stata_pid_fh' stata_pid
+				file close `stata_pid_fh'
+				local stata_pid = trim(`"`stata_pid'"')
+				cap confirm number `stata_pid'
+				if _rc local stata_pid = .
+				return scalar PID = `stata_pid'
+				if !mi(`stata_pid') global RSCRIPT_PID "$RSCRIPT_PID `stata_pid'"
+				global RSCRIPT_PID = trim("$RSCRIPT_PID")
+			}
 		}
-		
-		* bash shell call
-		else if strpos("`shellline'", "bash") {
-			shell LANGUAGE=en `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
-		}
-		
-		* all other unix shell calls (use same syntax as bash)
-		else if inlist("`os'","macosx","unix") {
-			shell LANGUAGE=en `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
-		}
-		
-		* windows shell call
 		else {
 			if !mi("`async'") {
 				winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
@@ -306,7 +276,6 @@ program define rscript, rclass
 		
 		di as result "`="_"*80'"
 		di as result "...end R output"
-		
 		
 		************************************************
 		* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
