@@ -77,6 +77,7 @@ if "`c(os)'"!="Windows" confirm integer number $RSCRIPT_PID
 
 rscript using example_async.R, args("arg1 with spaces" "`t3'") async
 if "`c(os)'"!="Windows" numlist "$RSCRIPT_PID", min(2) integer
+sleep 10000
 
 ******************************
 * Generate intentional errors
