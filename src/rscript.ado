@@ -1,5 +1,5 @@
 *! rscript 1.2.1 29jan2026 by David Molitor and Julian Reif
-* 1.2.1  miscellaneous minor bug fixes
+* 1.2.1  PID capture on Windows via PowerShell. More robust locale handling (LC_ALL=C).
 * 1.2    consolidated shell calls. For unix-based systems, return the PID.
 * 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations.
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
@@ -13,8 +13,8 @@ program define rscript, rclass
 
 	version 13.0
 
-	tempfile shell out err tmpfile_require rversion_control_script stata_pid_file
-	tempname shellfile tmpname_require stata_pid_fh
+	tempfile shell out err tmpfile_require rversion_control_script stata_pid_file ps_script
+	tempname shellfile tmpname_require stata_pid_fh ps_handle
 
 	syntax [using/], [rpath(string) args(string asis) rversion(string) require(string asis) async force]
 	
@@ -157,9 +157,15 @@ program define rscript, rclass
 			local rpath_end "& echo $! > `stata_pid_file'"
 		}
 		
-		* Windows: "cmd.exe /c start /B /min "" " to run in the background (using winexec)
+		* Windows async: use PowerShell if available (enables PID capture); otherwise fall back to winexec
 		else if "`os'" == "windows" {
-			local rpath_start `"cmd.exe /c start /B /MIN "" "'
+			local powershell_ok 0
+			cap shell powershell -NoProfile -Command "exit 0"
+			if _rc == 0 local powershell_ok 1
+			if !`powershell_ok' {
+				di as result "Note: PowerShell not available; PID will not be captured"
+				local rpath_start `"cmd.exe /c start /B /MIN "" "'
+			}
 		}
 		
 		else {
@@ -230,7 +236,7 @@ program define rscript, rclass
 	}
 	
 	************************************************
-	* Run the script specified by user. Redirect stdout to `out' and stderr to `err'. If run asynchronously on unix, store the PID.
+	* Run the script specified by user. Redirect stdout to `out' and stderr to `err'. If run asynchronously, store the PID.
 	************************************************
 	if !mi("`using'") {
 		
@@ -253,7 +259,26 @@ program define rscript, rclass
 		}
 		else {
 			if !mi("`async'") {
-				winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
+				if `powershell_ok' {
+					* Write PowerShell script to temp file to avoid cmd.exe quoting issues
+					qui file open `ps_handle' using `"`ps_script'"', write text replace
+					qui file write `ps_handle' _char(36) `"p = Start-Process -FilePath 'cmd.exe' -ArgumentList '/c ""`rpath'" "`using'" `args' > "`out'" 2>"`err'"" ' -WindowStyle Hidden -PassThru"' _n
+					qui file write `ps_handle' _char(36) `"p.Id | Out-File -FilePath '`stata_pid_file'' -Encoding ascii"' _n
+					qui file close `ps_handle'
+					shell powershell -NoProfile -Command - < "`ps_script'"
+					file open `stata_pid_fh' using `"`stata_pid_file'"', read
+					file read `stata_pid_fh' stata_pid
+					file close `stata_pid_fh'
+					local stata_pid = trim(`"`stata_pid'"')
+					cap confirm number `stata_pid'
+					if _rc local stata_pid = .
+					return scalar PID = `stata_pid'
+					if !mi(`stata_pid') global RSCRIPT_PID "$RSCRIPT_PID `stata_pid'"
+					global RSCRIPT_PID = trim("$RSCRIPT_PID")
+				}
+				else {
+					winexec `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err'
+				}
 			}
 			else shell set "LANGUAGE=en" & `rpath_start'"`rpath'" "`using'" `args' > `out' 2>`err' `rpath_end'
 		}

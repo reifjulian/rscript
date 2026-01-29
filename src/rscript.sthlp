@@ -61,6 +61,7 @@ It will not wait for the script to finish and will not display any R output or e
 {p 4 8 2}
 The {cmd:async} option can be used to launch a large number of jobs at the same time, all running in parallel.
 {cmd:rscript} stores process IDs in {cmd:r(PID)} and in the global macro {it:RSCRIPT_PID}.
+On Windows, PID capture requires PowerShell; if PowerShell is unavailable, the script still runs asynchronously but without PID capture.
 Use {help dobatch_wait:dobatch_wait} (if installed), part of the {help dobatch:dobatch} package, to pause Stata until these jobs have terminated.
 
 {p 4 8 2}

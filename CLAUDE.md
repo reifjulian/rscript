@@ -55,8 +55,8 @@ The `.ado` file has three main sections:
 
 ### Platform-specific behavior
 
-- **Unix/Mac**: Executes via `sh -c` with `LANG=C`. Async uses `nohup` with `&`.
-- **Windows**: Executes via `shell` with `LANGUAGE=en`. Async uses `winexec` / `cmd.exe /c start /B /MIN`. Batch mode is not supported on Windows.
+- **Unix/Mac**: Executes via `sh -c` with `LC_ALL=C`. Async uses `nohup` with `&`.
+- **Windows**: Executes via `shell` with `LANGUAGE=en`. Async uses PowerShell with PID capture if available, otherwise falls back to `winexec` / `cmd.exe /c start /B /MIN`. Batch mode is not supported on Windows.
 
 ### Key options
 
