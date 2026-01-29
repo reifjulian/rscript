@@ -102,8 +102,14 @@ rscript using example_warning.R, args("Error")
 * The force option should suppress R errors
 rscript using example_error.R, args("arg1 with spaces" "`t1'") force
 
+* Setting LANGUAGE=fr inside R would produce French error messages without the LC_ALL=C override
+* rscript should still detect the error because LC_ALL=C causes gettext to ignore LANGUAGE
+if "`c(os)'"!="Windows" {
+	rcof noi rscript using example_locale.R==198
+}
+
 ******************************
-* rversion() and require() examples 
+* rversion() and require() examples
 ******************************
 * Note, `rscript, rversion(Y X)`, where Y>X is allowable syntax, but will always generate an error
 

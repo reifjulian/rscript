@@ -195,7 +195,7 @@ program define rscript, rclass
 		qui write_r_script `rversion_control_script'
 
 		if inlist("`os'","macosx","unix") {
-			shell sh -c 'LANG=C "`rpath'" "`rversion_control_script'" `rversion' `arg_require' </dev/null >`out' 2>`err''
+			shell sh -c 'LC_ALL=C "`rpath'" "`rversion_control_script'" `rversion' `arg_require' </dev/null >`out' 2>`err''
 		}
 		else {
 			qui shell set "LANGUAGE=en" & "`rpath'" "`rversion_control_script'" `rversion' `arg_require' > `out' 2>`err'
@@ -238,7 +238,7 @@ program define rscript, rclass
 		if !mi(`"`args'"') di as result `"Args: `args'"'	
 
 		if inlist("`os'","macosx","unix") {
-			shell sh -c 'LANG=C `rpath_start' "`rpath'" "`using'" `args' </dev/null >`out' 2>`err' `rpath_end''
+			shell sh -c 'LC_ALL=C `rpath_start' "`rpath'" "`using'" `args' </dev/null >`out' 2>`err' `rpath_end''
 			if !mi("`async'") {
 				file open `stata_pid_fh' using `"`stata_pid_file'"', read
 				file read `stata_pid_fh' stata_pid
