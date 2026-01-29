@@ -99,6 +99,9 @@ rscript using example_warning.R, args(" Error:")
 rscript using example_warning.R, args("error:")
 rscript using example_warning.R, args("Error")
 
+* The force option should suppress R errors
+rscript using example_error.R, args("arg1 with spaces" "`t1'") force
+
 ******************************
 * rversion() and require() examples 
 ******************************
@@ -137,10 +140,20 @@ assert _rc==198
 
 rscript, rversion(3.6) require("tidyverse")
 
+* require() without rversion()
+rscript, require("tidyverse")
+
+rcof noi rscript, require("fakepackage")
+assert _rc==9
+
 rcof noi rscript, rversion(3.6) require("tidyverse" "fakepackage")
 assert _rc==9
 
 rcof noi rscript, require("hi" 3 "32hi" "tidyverse" `"32""')
+assert _rc==198
+
+* Cannot combine async with rversion()
+rcof noi rscript using example_1.R, args("arg1 with spaces" "`t1'") async rversion(3.6)
 assert _rc==198
 
 ***
@@ -154,6 +167,15 @@ assert _rc==100
 * Missing file specified
 rcof noi rscript using missing.R, args("arg1 with spaces" "`t1'")
 assert _rc==601
+
+* Confirm r(rpath) is stored after a successful call
+rscript using example_1.R, args("arg1 with spaces" "`t1'")
+assert !mi("`r(rpath)'")
+confirm file "`t1'"
+erase "`t1'"
+
+* Running a script without args()
+rscript using example_1.R
 
 
 ** EOF

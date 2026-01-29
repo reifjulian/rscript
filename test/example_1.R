@@ -6,7 +6,7 @@ if (length(args)) {
   arg2 <- args[2]
 } else {
   arg1 <- "3"
-  arg2 <- "4"
+  arg2 <- tempfile()
 }
 
 arg1

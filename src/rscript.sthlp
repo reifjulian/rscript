@@ -56,6 +56,9 @@ It will not wait for the script to finish and will not display any R output or e
 {cmd:rscript} has been tested on Windows, macOS, and Unix (bash and tcsh shells).
 
 {p 4 8 2}
+{cmd:rscript} does not work in batch mode on Stata for Windows because Stata ignores shell requests in this setting.
+
+{p 4 8 2}
 The {cmd:async} option can be used to launch a large number of jobs at the same time, all running in parallel.
 {cmd:rscript} stores process IDs in {cmd:r(PID)} and in the global macro {it:RSCRIPT_PID}.
 Use {help dobatch_wait:dobatch_wait} (if installed), part of the {help dobatch:dobatch} package, to pause Stata until these jobs have terminated.
@@ -72,7 +75,7 @@ For example, to ensure that the R installation is version 3.6 or higher, type:
 
 {p 4 4 2}Macros
 
-{p 8 8 2}{cmd:r(path)} {space 5} location of the R executable
+{p 8 8 2}{cmd:r(rpath)} {space 4} location of the R executable
 
 {p 4 4 2}Scalars
 

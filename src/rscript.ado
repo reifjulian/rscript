@@ -1,4 +1,5 @@
-*! rscript 1.2 30mar2025 by David Molitor and Julian Reif
+*! rscript 1.2.1 29jan2026 by David Molitor and Julian Reif
+* 1.2.1  miscellaneous minor bug fixes
 * 1.2    consolidated shell calls. For unix-based systems, return the PID.
 * 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations.
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
@@ -54,7 +55,7 @@ program define rscript, rclass
 			
 			* Windows default path: "C:/Program Files/R/R-X.Y.Z/bin/Rscript.exe" (newest version)
 			else if "`os'" == "windows" {
-				local subdirs : dir "C:/Program Files/R/" dirs "R-?.?.?", respectcase
+				local subdirs : dir "C:/Program Files/R/" dirs "R-*", respectcase
 				local subdirs : list clean subdirs
 				local subdirs : list sort subdirs
 				local ndirs   : list sizeof subdirs
@@ -259,7 +260,7 @@ program define rscript, rclass
 		
 		return local rpath `rpath'
 		
-		* If running aynchronously, exit without looking for stdout and stderr output
+		* If running asynchronously, exit without looking for stdout and stderr output
 		if !mi("`async'") exit
 		
 		************************************************
@@ -391,7 +392,7 @@ void parse_stderr_version_control(string scalar filename)
 	while ((line=fget(input_fh)) != J(0,0,"")) {
 		if (strpos(strlower(line), "error: this r installation is")!=0) exit(error(1))
 		if (strpos(strlower(line), "error: the following packages are not installed")!=0) exit(error(2))
-		if (strpos(strlower(line), "error")!=0) exit(error(198))
+		if (strpos(strlower(line), "error:")==1) exit(error(198))
 	}
 	
 	fclose(input_fh)
