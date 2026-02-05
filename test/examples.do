@@ -50,13 +50,6 @@ insheet using "`t2'", comma clear
 assert abs(stderror - 57.47701)<0.0001 & abs(estimate+238.8943)<0.0001 if term=="mpg"
 erase "`t2'"
 
-* Example 3: expanding ~ to user's home directory (unix/mac only)
-* Note: for this example to work, the /rscript folder must be placed in user's home directory)
-if "`c(os)'"!="Windows" {
-	rscript using "~/rscript/test/example_1.R", args("Hello World!" "`t2'")
-	confirm file "`t2'"
-	erase "`t2'"	
-}
 
 ***
 * Test asynchronous option
@@ -182,6 +175,15 @@ erase "`t1'"
 
 * Running a script without args()
 rscript using example_1.R
+
+
+* Example 3: expanding ~ to user's home directory (unix/mac only)
+* Note: for this example to work, the /rscript folder must be placed in user's home directory)
+if "`c(os)'"!="Windows" {
+	rscript using "~/rscript/test/example_1.R", args("Hello World!" "`t2'")
+	confirm file "`t2'"
+	erase "`t2'"	
+}
 
 
 ** EOF
