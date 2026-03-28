@@ -1,4 +1,7 @@
-# RSCRIPT: call an R script from Stata.
+Ć# RSCRIPT: call an R script from 
+
+
+Stata.
 
 - Current version: `1.2 30mar2025`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`platforms`](#platforms) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
