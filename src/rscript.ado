@@ -1,4 +1,5 @@
-*! rscript 1.2 30mar2025 by David Molitor and Julian Reif
+*! rscript 1.2.1 27sep2026 by David Molitor and Julian Reif
+* 1.2.1  parse_stderr now breaks when a line begins with "Execution halted" rather than "Error:", so that errors raised inside function calls ("Error in f() : ...") are detected (GitHub issue #12)
 * 1.2    consolidated shell calls. For unix-based systems, return the PID.
 * 1.1.2  fixed bug that caused rscript to not break after errors when running on non-English installations.
 * 1.1.1  added async() option. edited parse_stderr to break only when first word of stderr is "Error:"
@@ -398,6 +399,8 @@ void parse_stderr_version_control(string scalar filename)
 }
 
 // Parsers for the stderr and stdout files created when running the R script specified by the user
+// Rscript writes "Execution halted" to stderr whenever an uncaught error terminates the script. This is more reliable than
+// searching for "Error:", which R prints only for top-level errors ("Error in f() : ..." is printed for errors inside function calls).
 void parse_stderr(string scalar filename)
 {
 	real scalar input_fh
@@ -406,7 +409,6 @@ void parse_stderr(string scalar filename)
 	input_fh = fopen(filename, "r")
 	
 	while ((line=fget(input_fh)) != J(0,0,"")) {
-		if (strpos(line, "Error:")==1) exit(error(198))
 		if (strpos(line, "Execution halted")==1) exit(error(198))
 	}
 	
