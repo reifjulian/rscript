@@ -1,6 +1,6 @@
 # RSCRIPT: call an R script from Stata.
 
-- Current version: `1.2 30mar2025`
+- Current version: `1.2.1 27sep2026`
 - Jump to: [`overview`](#overview) [`installation`](#installation) [`platforms`](#platforms) [`usage`](#usage) [`tutorial`](#tutorial) [`update history`](#update-history) [`authors`](#authors)
 
 -----------
@@ -116,6 +116,8 @@ Finally, we read in the results that were outputted from R into Stata and displa
 ![rscript output](images/stata_rscript_output.png)
 
 ## Update History
+* **September 27, 2026**
+  - `rscript` now breaks when R writes "Execution halted" to stderr, rather than when a line begins with "Error:". This fixes a bug where errors raised inside function calls (which R reports as "Error in f() : ...") were not detected (issue #12, thanks to @mle2718)
 * **March 30, 2025**
   - Consolidated shell calls
   - On Unix-based systems, `rscript` now stores the process identifier in `r()` when the `async` option is specified. 

@@ -91,10 +91,13 @@ assert _rc==601
 di as error "example_error.R ended with an error" _n "See stderr output above for details" _n "invalid syntax"
 rcof noi rscript using example_error.R, args("arg1 with spaces" "`t1'")==198
 
-* A warning message that is sent to stderr and begins with the case-sensitive string "Error:" is flagged as an error
-rcof noi rscript using example_warning.R, args("Error:")==198
+* Example_error2.R has an error raised inside a function call ("Error in gzfile(file, "rb") : cannot open the connection"), so rscript should return _rc==198
+* R does not prefix these errors with "Error:", so this test confirms that rscript detects the "Execution halted" line instead (GitHub issue #12)
+di as error "example_error2.R ended with an error" _n "See stderr output above for details" _n "invalid syntax"
+rcof noi rscript using example_error2.R, args("arg1 with spaces" "`t1'")==198
 
-* These warning messages are not flagged as errors
+* Warning messages are not flagged as errors, even when they begin with the string "Error:" (R does not halt execution after a warning)
+rscript using example_warning.R, args("Error:")
 rscript using example_warning.R, args(" Error:")
 rscript using example_warning.R, args("error:")
 rscript using example_warning.R, args("Error")
