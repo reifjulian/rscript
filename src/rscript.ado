@@ -407,6 +407,7 @@ void parse_stderr(string scalar filename)
 	
 	while ((line=fget(input_fh)) != J(0,0,"")) {
 		if (strpos(line, "Error:")==1) exit(error(198))
+		if (strpos(line, "Execution halted")==1) exit(error(198))
 	}
 	
 	fclose(input_fh)
