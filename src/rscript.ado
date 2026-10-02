@@ -69,7 +69,7 @@ program define rscript, rclass
 				di as error "No default R executable found. Specify R executable using option rpath() or using the global RSCRIPT_PATH"
 				exit 198	
 			}
-			else di as result `"Using default path: `rpath'"'
+			else di as text "Using default path: " as result `"`rpath'"'
 		}
 	}
 	
@@ -202,7 +202,7 @@ program define rscript, rclass
 		}
 
 		* Report output from version control script call
-		di as result "Version information:"
+		di as text "Version information:"
 		type `"`out'"'
 		type `"`err'"'
 		
@@ -234,8 +234,8 @@ program define rscript, rclass
 	************************************************
 	if !mi("`using'") {
 		
-		di as result `"Running R script: `using'"'
-		if !mi(`"`args'"') di as result `"Args: `args'"'	
+		di as text "Running R script: " as result `"`using'"'
+		if !mi(`"`args'"') di as text "Args: " as result `"`args'"'
 
 		if inlist("`os'","macosx","unix") {
 			shell sh -c 'LANG=C `rpath_start' "`rpath'" "`using'" `args' </dev/null >`out' 2>`err' `rpath_end''
@@ -266,17 +266,17 @@ program define rscript, rclass
 		************************************************
 		* Display stdout and stderr output
 		************************************************
-		di as result "Begin R output:"
-		di as result "`="_"*80'"
-		
-		di as result "{ul:stdout}:"
+		di as text "Begin R output:"
+		di as text "`="_"*80'"
+
+		di as text "{ul:stdout}:"
 		type `"`out'"'
-		di as result _n
-		di as result "{ul:stderr}:"
+		di as text _n
+		di as text "{ul:stderr}:"
 		type `"`err'"'
-		
-		di as result "`="_"*80'"
-		di as result "...end R output"
+
+		di as text "`="_"*80'"
+		di as text "...end R output"
 		
 		************************************************
 		* If there was an "error" in the execution of the R script, notify the user (and break, unless -force- option is specified)
